@@ -1,0 +1,37 @@
+const foodPartnerModel = require("../models/foodpartner.model");
+const foodPartner = require("../models/foodpartner.model");
+const jwt = require("jsonwebtoken");
+
+
+const authFoodPartnerMiddleware = async (req, res, next) => {
+    let token = req.cookies.token;
+    if(!token){
+        return res.status(401).json({
+            message: "You must login first"
+        });
+    }
+    try{
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        // Fix: findById expects the id directly, not an object
+        let foodPartner = await foodPartnerModel.findById(decoded.id || decoded._id);
+
+        if(!foodPartner){
+            return res.status(401).json({
+                message: "Invalid Token - Food Partner not found"
+            });
+        }
+
+        req.foodPartner = foodPartner;
+       
+        next();
+    }
+    catch(err){
+        return res.status(401).json({
+            message: "Invalid Token"
+        });
+    }
+}
+
+module.exports = {
+    authFoodPartnerMiddleware
+}
