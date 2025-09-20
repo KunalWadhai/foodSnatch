@@ -5,35 +5,48 @@ const userModel = require("../models/user.model");
 const foodPartnerModel = require("../models/foodpartner.model")
 
 const registerUser = async (req, res) => {
-   let {fullname, email, password} = req.body;
-   
-   let isUserAlereadyCreated = await userModel.findOne({email:email});
-   if(isUserAlereadyCreated){
-      return res.status(400).json({
-         message : "User Already Created"
+   try {
+      let {fullname, email, password} = req.body;
+
+      if (!fullname || !email || !password) {
+         return res.status(400).json({
+            message: "All fields are required"
+         });
+      }
+
+      let isUserAlereadyCreated = await userModel.findOne({email:email});
+      if(isUserAlereadyCreated){
+         return res.status(400).json({
+            message : "User Already Created"
+         });
+      }
+      //const hashedPassword =  bcrypt.hash(password, 10)
+      const saltRounds = 10;
+      const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+      let user = await userModel.create({
+           fullname,
+           email,
+           password: hashedPassword
+        });
+
+       let token = jwt.sign({id:user._id}, process.env.JWT_SECRET);
+       res.cookie("token", token);
+
+       res.status(201).json({
+           message:"User Created Successfully",
+               user : {
+                   id : user._id,
+                   fullname : user.fullname,
+                   email : user.email
+               }
+           });
+   } catch (error) {
+      console.error("Registration error:", error);
+      res.status(500).json({
+         message: "Internal server error during registration"
       });
    }
-   //const hashedPassword =  bcrypt.hash(password, 10)
-   const saltRounds = 10;
-   const hashedPassword = await bcrypt.hash(password, saltRounds);
-   
-   let user = await userModel.create({
-        fullname, 
-        email, 
-        password: hashedPassword
-     });
-
-    let token = jwt.sign({id:user._id}, process.env.JWT_SECRET);
-    res.cookie("token", token);
-
-    res.status(201).json({
-        message:"User Created Successfully",
-            user : {
-                id : user._id, 
-                fullname : user.fullname,
-                email : user.email
-            }
-        });     
 }
 
 const loginUser = async (req, res) => {
@@ -67,32 +80,51 @@ const logoutUser = (req, res) => {
 }
 
 const registerFoodPartner = async (req, res) => {
-    let {name, email, password} = req.body;
+    try {
+        let {bussinessName, email, password, contactName, phone, address} = req.body;
 
-    let foodPartnerAlreadyExist = await foodPartnerModel.findOne({email:email});
-    if(foodPartnerAlreadyExist){
-        return res.status(400).json({
-            message : "Food Partner Already Exist"
+        if (!bussinessName || !email || !password || !contactName || !phone || !address) {
+            return res.status(400).json({
+                message: "All fields are required"
+            });
+        }
+
+        let foodPartnerAlreadyExist = await foodPartnerModel.findOne({email:email});
+        if(foodPartnerAlreadyExist){
+            return res.status(400).json({
+                message : "Food Partner Already Exist"
+            });
+        }
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+        const foodPartner = await foodPartnerModel.create({
+            bussinessName,
+            contactName,
+            email,
+            password: hashedPassword,
+            phone,
+            address
+        });
+        let token = jwt.sign({id:foodPartner._id}, process.env.JWT_SECRET);
+        res.cookie("token", token);
+        res.status(201).json({
+            message : "Food Partner Created Successfully",
+            foodPartner:{
+                id: foodPartner._id,
+                bussinessName: foodPartner.bussinessName,
+                contactName: foodPartner.contactName,
+                email: foodPartner.email,
+                phone: foodPartner.phone,
+                address: foodPartner.address
+            }
+        });
+    } catch (error) {
+        console.error("Food Partner registration error:", error);
+        res.status(500).json({
+            message: "Internal server error during food partner registration"
         });
     }
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
-
-    const foodPartner = await foodPartnerModel.create({
-        name, 
-        email,
-        password: hashedPassword
-    });
-    let token = jwt.sign({id:foodPartner._id}, process.env.JWT_SECRET);
-    res.cookie("token", token);
-    res.status(201).json({
-        message : "Food Partner Created Successfully",
-        foodPartner:{
-            id: foodPartner._id,
-            name: foodPartner.name,
-            email: foodPartner.email  
-        }
-    });
 }
 
 const loginFoodPartner = async (req, res) => {

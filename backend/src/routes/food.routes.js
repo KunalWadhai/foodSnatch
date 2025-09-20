@@ -12,4 +12,6 @@ const upload = multer({
 // for adding food food partner must be logged in so it would be the protected route
 router.post("/", authMiddleware.authFoodPartnerMiddleware, upload.single("video"), foodController.createFood);
 
+// when user scrolls the food reels i.e sending get request /api/food -- get ---protected
+router.get("/", authMiddleware.authUserMiddleware, foodController.getFoodItems);
 module.exports = router;
