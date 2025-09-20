@@ -1,6 +1,6 @@
 # FoodSnatch
 
-FoodSnatch is a minimal yet powerful platform to order your favorite meals and help food partners grow with ease. It provides a seamless experience for users to browse and order food, and for food partners to manage their offerings.
+FoodSnatch is a minimal yet powerful platform that provides reels based food videos from where you can reach and contact to food partner.
 
 ## Architecture
 
@@ -106,4 +106,4 @@ Feel free to fork the repository and submit pull requests. For major changes, pl
 
 ## Contact
 
-Built with ❤️ by the FoodSnatch team.
+Built with ❤️ by the FoodSnatch Developer.
