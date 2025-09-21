@@ -5,8 +5,8 @@ const foodModel = require("../models/food.model"); // to displaying total meals 
 const getFoodPartnerById = async (req, res) => {
     const foodPartnerId = req.params.id;
 
-    const foodPartner = await foodPartnerModel.findById({id: foodPartnerId});
-    const foodByFoodPartnerId = await foodModel.findById({_id: foodPartnerId});
+    const foodPartner = await foodPartnerModel.findById(foodPartnerId);
+    const foodByFoodPartnerId = await foodModel.find({ foodPartnerId: foodPartnerId });
 
     console.log(foodPartner);
     console.log(foodByFoodPartnerId);
@@ -21,7 +21,9 @@ const getFoodPartnerById = async (req, res) => {
         message: "Food Partner Fetch Successfully.",
         foodPartner: {
             ...foodPartner.toObject(),
-            foodItem: foodByFoodPartnerId
+            totalMeals: foodByFoodPartnerId.length,
+            servedCount: foodByFoodPartnerId.filter(food => food.isServed).length,
+            videos: foodPartner.videos || []
         }
     });
 }

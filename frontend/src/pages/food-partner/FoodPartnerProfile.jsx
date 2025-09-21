@@ -1,26 +1,28 @@
-import React, { useEffect, useState } from "react";
+import {useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 
 export default function FoodPartnerProfile() {
-  const { id } = useParams(); // FoodPartner ID from URL
+  const { profile } = useParams(); // FoodPartner ID from URL
   const [partner, setPartner] = useState(null);
   const [videos, setVideos] = useState([]);
 
   // Fetch partner details + videos
+  console.log("food partner id : ", profile);
   useEffect(() => {
-    axios.get(`http://localhost:3000/api/food-partner/${id}`, { withCredentials: true })
+    axios.get(`http://localhost:3000/api/food-partner/${profile}`, { withCredentials: true })
       .then((res) => {
         setPartner(res.data.foodPartner);
         setVideos(res.data.foodPartner.videos || []);
+        console.log(res.data.foodPartner);
       })
       .catch((err) => console.log("Error fetching partner profile:", err));
-  }, [id]);  // [id] -> dependancy array is id
+  }, [profile]);  // [profile] -> dependancy array is profile
 
   if (!partner) {
     return (
       <div className="h-screen flex items-center justify-center text-white text-xl">
-        Loading Partner Profile...
+        Loading Food Partner Profile...
       </div>
     );
   }

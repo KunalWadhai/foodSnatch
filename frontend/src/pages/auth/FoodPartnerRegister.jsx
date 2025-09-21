@@ -10,17 +10,17 @@ export default function FoodPartnerRegister() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const bussinessName = e.target.bussinessName.value;
+    const businessName = e.target.businessName.value;
     const contactName = e.target.contactName.value;
     const email = e.target.email.value;
     const password = e.target.password.value;
     const phone = e.target.phone.value;
     const address = e.target.address.value;
 
-    console.log(bussinessName + " " + contactName + " "  + address) 
+    console.log(businessName + " " + contactName + " "  + address)
     try {
     const res = await axios.post("http://localhost:3000/api/auth/food-partner/register", {
-        bussinessName,
+        businessName,
         contactName,
         email,
         password,
@@ -50,7 +50,7 @@ export default function FoodPartnerRegister() {
           Partner Signup
         </h1>
         <form className="space-y-4" onSubmit={handleSubmit}>
-          <input id="bussinessName" type="text" placeholder="Business Name" className="w-full px-4 py-3 rounded-lg bg-transparent border border-gray-500 text-white focus:ring-2 focus:ring-purple-500 outline-none"/>
+          <input id="businessName" type="text" placeholder="Business Name" className="w-full px-4 py-3 rounded-lg bg-transparent border border-gray-500 text-white focus:ring-2 focus:ring-purple-500 outline-none"/>
           <input id="contactName" type="text" placeholder="Contact Name" className="w-full px-4 py-3 rounded-lg bg-transparent border border-gray-500 text-white focus:ring-2 focus:ring-purple-500 outline-none"/>
           <input id="email" type="email" placeholder="Email" className="w-full px-4 py-3 rounded-lg bg-transparent border border-gray-500 text-white focus:ring-2 focus:ring-purple-500 outline-none"/>
           <input id="password" type="password" placeholder="Password" className="w-full px-4 py-3 rounded-lg bg-transparent border border-gray-500 text-white focus:ring-2 focus:ring-purple-500 outline-none"/>

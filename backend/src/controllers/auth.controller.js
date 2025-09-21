@@ -81,9 +81,9 @@ const logoutUser = (req, res) => {
 
 const registerFoodPartner = async (req, res) => {
     try {
-        let {bussinessName, email, password, contactName, phone, address} = req.body;
+        let {businessName, email, password, contactName, phone, address} = req.body;
 
-        if (!bussinessName || !email || !password || !contactName || !phone || !address) {
+        if (!businessName || !email || !password || !contactName || !phone || !address) {
             return res.status(400).json({
                 message: "All fields are required"
             });
@@ -99,7 +99,7 @@ const registerFoodPartner = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, saltRounds);
 
         const foodPartner = await foodPartnerModel.create({
-            bussinessName,
+            businessName,
             contactName,
             email,
             password: hashedPassword,
@@ -112,7 +112,7 @@ const registerFoodPartner = async (req, res) => {
             message : "Food Partner Created Successfully",
             foodPartner:{
                 id: foodPartner._id,
-                bussinessName: foodPartner.bussinessName,
+                businessName: foodPartner.businessName,
                 contactName: foodPartner.contactName,
                 email: foodPartner.email,
                 phone: foodPartner.phone,

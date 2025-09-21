@@ -19,7 +19,7 @@ export default function Reels() {
             id: index + 1,
             src: item.video,
             description: item.description,
-            storeUrl: `/food-partner/${item.foodpartner}`,
+            storeUrl: `/food-partner/${item.foodpartner}`,   // this contains the food-partner id 
             itemName: item.name,
           }));
           setVideos(fetchedVideos);
