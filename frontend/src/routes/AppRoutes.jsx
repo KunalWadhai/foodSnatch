@@ -5,7 +5,7 @@ import UserLogin from "../pages/auth/UserLogin"
 import FoodPartnerRegister from "../pages/auth/FoodPartnerRegister"
 import FoodPartnerLogin from "../pages/auth/FoodPartnerLogin"
 import Home from "../pages/general/Home"
-import CreateFoodPartner from "../pages/food-partner/CreateFoodPartner";
+import CreateFood from "../pages/food-partner/CreateFood";
 import Reels from "../pages/general/Reels"
 import FoodPartnerProfile from "../pages/food-partner/FoodPartnerProfile";
 
@@ -19,7 +19,7 @@ const AppRoutes = () => {
                 <Route path="/food-partner/register" element={<FoodPartnerRegister/>}></Route>
                 <Route path="/food-partner/login" element={<FoodPartnerLogin/>}></Route>
                 <Route path="/" element={<Home/>}></Route>
-                <Route path="/create-food" element={<CreateFoodPartner/>}></Route>
+                <Route path="/create-food" element={<CreateFood/>}></Route>
                 <Route path="/reels" element={<Reels/>}></Route>
                 <Route path="/food-partner/:profile" element={<FoodPartnerProfile/>}></Route>
             </Routes>

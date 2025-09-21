@@ -15,4 +15,11 @@ router.post("/", authMiddleware.authFoodPartnerMiddleware, upload.single("video"
 // when user scrolls the food reels i.e sending get request /api/food -- get ---protected
 router.get("/", authMiddleware.authUserMiddleware, foodController.getFoodItems);
 
+// some features over the food reels to like and save the stuff. 
+// post: /api/food/like
+router.post("/like", authMiddleware.authUserMiddleware, foodController.likeFood);
+
+// post : /api/food/save-food
+router.post("/save", authMiddleware.authUserMiddleware, foodController.saveFoodReel);
+
 module.exports = router;

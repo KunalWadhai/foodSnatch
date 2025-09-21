@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Upload } from "lucide-react"; // icon from lucide-react
+import { Upload, Loader2, CheckCircle2 } from "lucide-react"; 
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -7,6 +7,10 @@ const FoodPartnerCreate = () => {
   const [video, setVideo] = useState(null);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [successPopup, setSuccessPopup] = useState(false);
+
+  const navigate = useNavigate();
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -17,35 +21,35 @@ const FoodPartnerCreate = () => {
     }
   };
 
-  const navigate = useNavigate();
-
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Uploading:", { video, name, description });
+    setLoading(true);
 
     const formData = new FormData();
-
     formData.append("name", name);
     formData.append("video", video);
     formData.append("description", description);
-    // Here you can integrate API upload logic
-    // const name = e.target.name.value;
-    // const video = e.target.video.value;
-    // const description = e.target.description.value;
 
-     axios.post("http://localhost:3000/api/food", formData, 
-     {withCredentials: true})
-     .then((response) => {
+    axios.post("http://localhost:3000/api/food", formData, { withCredentials: true })
+      .then((response) => {
         console.log(response.data);
-        navigate("/");
-     })
-     .catch((error) => {
+        setLoading(false);
+        setSuccessPopup(true);
+
+        // Redirect after 2.5 seconds
+        setTimeout(() => {
+          setSuccessPopup(false);
+          navigate("/");
+        }, 2500);
+      })
+      .catch((error) => {
         console.log("Error while creating food.", error);
-     })
+        setLoading(false);
+      });
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-zinc-950 via-zinc-900 to-black text-white flex flex-col">
+    <div className="min-h-screen bg-gradient-to-b from-zinc-950 via-zinc-900 to-black text-white flex flex-col relative">
       {/* Navbar */}
       <header className="border-b border-zinc-800">
         <h1 className="px-6 py-4 text-2xl font-extrabold tracking-tight">
@@ -57,7 +61,7 @@ const FoodPartnerCreate = () => {
       <main className="flex flex-1 items-center justify-center px-4 py-8">
         <form
           onSubmit={handleSubmit}
-          className="w-full max-w-md bg-zinc-900/80 backdrop-blur-lg rounded-2xl p-6 shadow-2xl border border-zinc-800"
+          className={`w-full max-w-md bg-zinc-900/80 backdrop-blur-lg rounded-2xl p-6 shadow-2xl border border-zinc-800 ${loading ? "opacity-50 pointer-events-none" : ""}`}
         >
           <h2 className="text-xl font-semibold mb-1">Create Food</h2>
           <p className="text-gray-400 text-sm mb-6">
@@ -124,12 +128,23 @@ const FoodPartnerCreate = () => {
           {/* Submit Button */}
           <button
             type="submit"
-            className="mt-6 w-full py-2.5 bg-purple-600 hover:bg-purple-700 rounded-lg font-semibold shadow-lg transition"
+            className="mt-6 w-full py-2.5 bg-purple-600 hover:bg-purple-700 rounded-lg font-semibold shadow-lg transition flex items-center justify-center"
           >
-            Save Food
+            {loading ? <Loader2 className="animate-spin mr-2" /> : "Save Food"}
           </button>
         </form>
       </main>
+
+      {/* Success Popup */}
+      {successPopup && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black/60">
+          <div className="bg-zinc-900 rounded-xl shadow-xl p-6 text-center border border-zinc-700">
+            <CheckCircle2 className="text-green-400 w-12 h-12 mx-auto mb-3" />
+            <h3 className="text-lg font-semibold">Food added successfully 🎉</h3>
+            <p className="text-sm text-gray-400 mt-1">Redirecting to home...</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

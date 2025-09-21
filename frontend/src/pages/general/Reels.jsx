@@ -1,15 +1,19 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { Home, Bookmark, MessageCircle } from "lucide-react";
 
 export default function Reels() {
   const videoRefs = useRef([]);
   const containerRef = useRef(null);
   const [mutedMap, setMutedMap] = useState({});
   const [likes, setLikes] = useState({});
+  const [saved, setSaved] = useState({});
+  const [comments, setComments] = useState({});
   const [videos, setVideos] = useState([]);
+  const [showHeart, setShowHeart] = useState({});
 
-  // Fetch videos from backend
+  // Fetch videos
   useEffect(() => {
     axios
       .get("http://localhost:3000/api/food", { withCredentials: true })
@@ -19,7 +23,7 @@ export default function Reels() {
             id: index + 1,
             src: item.video,
             description: item.description,
-            storeUrl: `/food-partner/${item.foodpartner}`,   // this contains the food-partner id 
+            storeUrl: `/food-partner/${item.foodpartner}`,
             itemName: item.name,
           }));
           setVideos(fetchedVideos);
@@ -30,7 +34,7 @@ export default function Reels() {
       });
   }, []);
 
-  // Auto-play / pause logic
+  // Autoplay / pause
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -49,15 +53,33 @@ export default function Reels() {
     return () => observer.disconnect();
   }, [videos]);
 
+  // Like logic
   const toggleLike = (id) => {
-    setLikes((prev) => ({
+    setLikes((prev) => {
+      const updated = {
+        ...prev,
+        [id]: prev[id]
+          ? { count: prev[id].count + (prev[id].liked ? -1 : 1), liked: !prev[id].liked }
+          : { count: 1, liked: true },
+      };
+
+      if (!prev[id]?.liked) {
+        setShowHeart((h) => ({ ...h, [id]: true }));
+        setTimeout(() => setShowHeart((h) => ({ ...h, [id]: false })), 800);
+      }
+      return updated;
+    });
+  };
+
+  // Save logic
+  const toggleSave = (id) => {
+    setSaved((prev) => ({
       ...prev,
-      [id]: prev[id]
-        ? { count: prev[id].count + (prev[id].liked ? -1 : 1), liked: !prev[id].liked }
-        : { count: 1, liked: true },
+      [id]: prev[id] ? !prev[id] : true,
     }));
   };
 
+  // Mute toggle
   const toggleMutedFor = (id) => {
     const el = videoRefs.current[id];
     if (el) {
@@ -71,7 +93,7 @@ export default function Reels() {
   return (
     <div
       ref={containerRef}
-      className="h-screen w-full bg-black overflow-y-scroll snap-y snap-mandatory scroll-smooth"
+      className="h-screen w-full bg-black overflow-y-scroll snap-y snap-mandatory scroll-smooth relative"
     >
       {videos.length === 0 ? (
         <div className="h-screen flex items-center justify-center text-white text-xl">
@@ -83,8 +105,8 @@ export default function Reels() {
             key={video.id}
             className="reel-item relative h-screen w-full flex items-center justify-center snap-center"
           >
-            {/* Video container (centered like YouTube Shorts) */}
-            <div className="relative w-[350px] md:w-[400px] lg:w-[450px] h-[600px] bg-black rounded-2xl overflow-hidden shadow-2xl">
+            {/* Reel container */}
+            <div className="relative w-[350px] md:w-[400px] lg:w-[450px] h-full bg-black rounded-2xl overflow-hidden shadow-2xl">
               <video
                 ref={(el) => (videoRefs.current[video.id] = el)}
                 src={video.src}
@@ -95,56 +117,102 @@ export default function Reels() {
                 preload="metadata"
               />
 
-              {/* Gradient overlay at bottom */}
+              {/* Heart glowing animation */}
+              {showHeart[video.id] && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="text-6xl text-pink-500 animate-ping drop-shadow-[0_0_20px_#ec4899]">
+                    ❤️
+                  </span>
+                </div>
+              )}
+
+              {/* Gradient overlay */}
               <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
 
-              {/* Bottom content (description, store, actions) */}
-              <div className="absolute bottom-4 left-0 right-0 px-4 text-white flex justify-between items-end">
-                {/* Left: Description + Store */}
-                <div className="max-w-[70%]">
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-black font-bold">
-                      {video.itemName?.[0] || "F"}
-                    </div>
-                    <span className="font-semibold">{video.itemName}</span>
-                  </div>
-                  <p className="text-sm text-gray-200 mb-2">{video.description}</p>
-                  <Link
-                    to={video.storeUrl}
-                    className="inline-block px-4 py-2 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 hover:shadow-xl transition font-semibold text-sm"
-                  >
-                    Visit Store
-                  </Link>
-                </div>
+              {/* Right-side vertical action buttons */}
+              <div className="absolute right-4 bottom-28 flex flex-col items-center gap-6 text-white">
 
-                {/* Right: Action buttons */}
-                <div className="flex flex-col items-center gap-5">
-                  <button
-                    onClick={() => toggleLike(video.id)}
-                    className={`w-12 h-12 rounded-full flex flex-col items-center justify-center text-xl transition-transform ${
-                      likes[video.id]?.liked
-                        ? "bg-red-500/20 text-red-400 scale-110 shadow-lg"
-                        : "bg-white/10 text-white hover:scale-105"
-                    }`}
-                  >
-                    ❤️
-                    <span className="text-xs">{likes[video.id]?.count || 0}</span>
-                  </button>
-                  <button
-                    onClick={() => toggleMutedFor(video.id)}
-                    className="w-12 h-12 rounded-full flex items-center justify-center bg-white/10 text-white hover:scale-105 transition-transform"
-                  >
-                    {mutedMap[video.id] ? "🔊" : "🔇"}
-                  </button>
+                {/* Like */}
+                <button
+                  onClick={() => toggleLike(video.id)}
+                  className={`w-12 h-12 rounded-full flex flex-col items-center justify-center text-xl transition-transform ${
+                    likes[video.id]?.liked
+                      ? "bg-pink-500/20 text-pink-400 scale-110 shadow-lg"
+                      : "bg-white/10 text-white hover:scale-105"
+                  }`}
+                >
+                  ❤️
+                  <span className="text-xs">{likes[video.id]?.count || 0}</span>
+                </button>
+
+                {/* Save */}
+                <button
+                  onClick={() => toggleSave(video.id)}
+                  className={`w-12 h-12 rounded-full flex flex-col items-center justify-center text-xl transition-transform ${
+                    saved[video.id]
+                      ? "bg-white text-black scale-110 shadow-lg"
+                      : "bg-transparent border border-white/40 text-white hover:bg-white/20"
+                  }`}
+                >
+                  <Bookmark size={22} />
+                  <span className="text-xs">{saved[video.id] ? 1 : 0}</span>
+                </button>
+
+                {/* Comments */}
+                <button
+                  onClick={() =>
+                    setComments((c) => ({
+                      ...c,
+                      [video.id]: (c[video.id] || 0) + 1,
+                    }))
+                  }
+                  className="w-12 h-12 rounded-full flex flex-col items-center justify-center text-xl bg-white/10 text-white hover:scale-105 transition-transform"
+                >
+                  <MessageCircle size={22} />
+                  <span className="text-xs">{comments[video.id] || 0}</span>
+                </button>
+
+                {/* Mute */}
+                <button
+                  onClick={() => toggleMutedFor(video.id)}
+                  className="w-12 h-12 rounded-full flex items-center justify-center bg-white/10 text-white hover:scale-105 transition-transform"
+                >
+                  {mutedMap[video.id] ? "🔊" : "🔇"}
+                </button>
+              </div>
+
+              {/* Reel Info Section above bar */}
+              <div className="absolute bottom-20 left-0 right-0 px-4 text-white">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-black font-bold">
+                    {video.itemName?.[0] || "F"}
+                  </div>
+                  <span className="font-semibold">{video.itemName}</span>
                 </div>
+                <p className="text-sm text-gray-200 mb-2">{video.description}</p>
+                <Link
+                  to={video.storeUrl}
+                  className="inline-block px-4 py-2 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 hover:shadow-xl transition font-semibold text-sm"
+                >
+                  Visit Store
+                </Link>
+              </div>
+
+              {/* Bottom reel bar */}
+              <div className="absolute bottom-0 left-0 right-0 bg-black/30 backdrop-blur-sm border-t border-white/10 px-6 py-3 flex justify-around items-center text-white">
+                <Link to="/" className="flex flex-col items-center text-sm">
+                  <Home size={22} />
+                  <span>Home</span>
+                </Link>
+                <Link to="/save" className="flex flex-col items-center text-sm">
+                  <Bookmark size={22} />
+                  <span>Saved</span>
+                </Link>
               </div>
             </div>
           </div>
         ))
       )}
-      <div className="absolute left-4 bottom-4 z-30 text-xs text-gray-400">
-        Tap video to toggle mute. Scroll/swipe to change reels.
-      </div>
     </div>
   );
 }
