@@ -14,4 +14,5 @@ router.post("/", authMiddleware.authFoodPartnerMiddleware, upload.single("video"
 
 // when user scrolls the food reels i.e sending get request /api/food -- get ---protected
 router.get("/", authMiddleware.authUserMiddleware, foodController.getFoodItems);
+
 module.exports = router;
