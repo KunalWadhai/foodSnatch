@@ -6,7 +6,7 @@ const getFoodPartnerById = async (req, res) => {
     const foodPartnerId = req.params.id;
 
     const foodPartner = await foodPartnerModel.findById(foodPartnerId);
-    const foodByFoodPartnerId = await foodModel.find({ foodPartnerId: foodPartnerId });
+    const foodByFoodPartnerId = await foodModel.find({ foodpartner: foodPartnerId });
 
     console.log(foodPartner);
     console.log(foodByFoodPartnerId);
@@ -23,7 +23,12 @@ const getFoodPartnerById = async (req, res) => {
             ...foodPartner.toObject(),
             totalMeals: foodByFoodPartnerId.length,
             servedCount: foodByFoodPartnerId.filter(food => food.isServed).length,
-            videos: foodPartner.videos || []
+            videos: foodByFoodPartnerId.map(food => ({
+                video: food.video,
+                title: food.name,
+                description: food.description,
+                profile: foodPartnerId
+            }))
         }
     });
 }
