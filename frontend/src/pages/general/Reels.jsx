@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import { Home, Bookmark, MessageCircle } from "lucide-react";
+import { Home, Bookmark, MessageCircle, TruckElectric } from "lucide-react";
+
 
 export default function Reels() {
   const videoRefs = useRef([]);
@@ -11,28 +12,71 @@ export default function Reels() {
   const [saved, setSaved] = useState({});
   const [comments, setComments] = useState({});
   const [videos, setVideos] = useState([]);
-  const [showHeart, setShowHeart] = useState({});
 
   // Fetch videos
   useEffect(() => {
-    axios
-      .get("http://localhost:3000/api/food", { withCredentials: true })
-      .then((response) => {
+    const fetchVideos = async () => {
+      try {
+        const response = await axios.get("http://localhost:3000/api/food", { withCredentials: true });
         if (response.data.foodItem) {
-          const fetchedVideos = response.data.foodItem.map((item, index) => ({
-            id: index + 1,
+          const fetchedVideos = response.data.foodItem.map((item) => ({
+            id: item._id,
             src: item.video,
             description: item.description,
             storeUrl: `/food-partner/${item.foodpartner}`,
             itemName: item.name,
+            likeCount: item.likeCount || 0,
           }));
           setVideos(fetchedVideos);
+
+          // Fetch like and save status for all videos
+          const foodIds = fetchedVideos.map(v => v.id);
+          await fetchLikeAndSaveStatus(foodIds);
         }
-      })
-      .catch((err) => {
+      } catch (err) {
         console.log("Error While Fetching Videos", err);
-      });
+      }
+    };
+
+    fetchVideos();
   }, []);
+
+  //Fetch like and save status for videos
+  const fetchLikeAndSaveStatus = async (foodIds) => {
+    try {
+      // Fetch like status
+      const likeResponse = await axios.post("http://localhost:3000/api/food/like-status", { foodIds });
+      const likedFoodIds = likeResponse.data.likedFoodIds || [];
+
+      // Fetch saved foods
+      const savedResponse = await axios.get("http://localhost:3000/api/food/saved");
+      const savedFoods = savedResponse.data.savedFoods || [];
+      const savedFoodIds = savedFoods.map(sf => sf.food._id);
+
+      // Update state
+      const likesState = {};
+      const savedState = {};
+
+      foodIds.forEach(id => {
+        likesState[id] = { liked: likedFoodIds.includes(id), count: 0 };
+        savedState[id] = savedFoodIds.includes(id);
+      });
+
+      setLikes(likesState);
+      setSaved(savedState);
+    } catch (error) {
+      console.log("Error fetching like/save status:", error);
+      // Set default states if API calls fail
+      const likesState = {};
+      const savedState = {};
+      foodIds.forEach(id => {
+        likesState[id] = { liked: false, count: 0 };
+        savedState[id] = false;
+      });
+      setLikes(likesState);
+      setSaved(savedState);
+    }
+  };
 
   // Autoplay / pause
   useEffect(() => {
@@ -53,30 +97,47 @@ export default function Reels() {
     return () => observer.disconnect();
   }, [videos]);
 
-  // Like logic
-  const toggleLike = (id) => {
-    setLikes((prev) => {
-      const updated = {
-        ...prev,
-        [id]: prev[id]
-          ? { count: prev[id].count + (prev[id].liked ? -1 : 1), liked: !prev[id].liked }
-          : { count: 1, liked: true },
-      };
+  
+  // Like Video
+  const likeVideo = async (videoId) => {
+      try {
+          const response = await axios.post("http://localhost:3000/api/food/like", {foodId: videoId}, {withCredentials: true});
 
-      if (!prev[id]?.liked) {
-        setShowHeart((h) => ({ ...h, [id]: true }));
-        setTimeout(() => setShowHeart((h) => ({ ...h, [id]: false })), 800);
+          if(response.data.message === "Like Added Successfully" || response.data.message === "Like Added Successfully (Guest)"){
+              setVideos( (prev) => prev.map((v) => v.id == videoId ? {...v, likeCount: v.likeCount + 1 } : v ));
+          } else if(response.data.message === "Food Unliked Successfully"){
+              setVideos( (prev) => prev.map( (v) => v.id == videoId ? {...v, likeCount: v.likeCount - 1} : v));
+          }
+      } catch (error) {
+          console.error("Error liking video:", error);
+          alert("Error liking video. Please try again.");
       }
-      return updated;
-    });
-  };
+  }
 
   // Save logic
-  const toggleSave = (id) => {
-    setSaved((prev) => ({
-      ...prev,
-      [id]: prev[id] ? !prev[id] : true,
-    }));
+  const toggleSave = async (videoId) => {
+    try {
+      const response = await axios.post("http://localhost:3000/api/food/save", {foodId: videoId}, {withCredentials: true});
+
+      if(response.data.message === "Food Saved Successfully"){
+        setSaved((prev) => ({
+          ...prev,
+          [videoId]: true,
+        }));
+      } else if(response.data.message === "Saved Food Deleted Successfully."){
+        setSaved((prev) => ({
+          ...prev,
+          [videoId]: false,
+        }));
+      }
+    } catch (error) {
+      console.error("Error saving video:", error);
+      if (error.response && error.response.status === 401) {
+        alert("Please log in to save videos.");
+      } else {
+        alert("Error saving video. Please try again.");
+      }
+    }
   };
 
   // Mute toggle
@@ -117,14 +178,7 @@ export default function Reels() {
                 preload="metadata"
               />
 
-              {/* Heart glowing animation */}
-              {showHeart[video.id] && (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-6xl text-pink-500 animate-ping drop-shadow-[0_0_20px_#ec4899]">
-                    ❤️
-                  </span>
-                </div>
-              )}
+
 
               {/* Gradient overlay */}
               <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
@@ -134,7 +188,7 @@ export default function Reels() {
 
                 {/* Like */}
                 <button
-                  onClick={() => toggleLike(video.id)}
+                  onClick={() => likeVideo(video.id)}
                   className={`w-12 h-12 rounded-full flex flex-col items-center justify-center text-xl transition-transform ${
                     likes[video.id]?.liked
                       ? "bg-pink-500/20 text-pink-400 scale-110 shadow-lg"
@@ -142,7 +196,7 @@ export default function Reels() {
                   }`}
                 >
                   ❤️
-                  <span className="text-xs">{likes[video.id]?.count || 0}</span>
+                  <span className="text-xs">{video.likeCount || 0}</span>
                 </button>
 
                 {/* Save */}
@@ -204,7 +258,7 @@ export default function Reels() {
                   <Home size={22} />
                   <span>Home</span>
                 </Link>
-                <Link to="/save" className="flex flex-col items-center text-sm">
+                <Link to="/saved" className="flex flex-col items-center text-sm">
                   <Bookmark size={22} />
                   <span>Saved</span>
                 </Link>
