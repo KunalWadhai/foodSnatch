@@ -20,7 +20,7 @@ router.get("/", foodController.getFoodItems);
 router.post("/like", foodController.likeFood);
 
 // post : /api/food/save-food
-router.post("/save", foodController.saveFoodReel);
+router.post("/save", authMiddleware.authUserMiddleware, foodController.saveFoodReel);
 
 // get : /api/food/saved - get saved foods for user
 router.get("/saved", foodController.getSavedFoods);

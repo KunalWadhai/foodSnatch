@@ -1,10 +1,13 @@
 import AppRoutes from "./routes/AppRoutes";
+import { SavedFoodsProvider } from "./contexts/SavedFoodsContext";
 
 const App = () => {
     return (
-      <div>
-        <AppRoutes/>
-      </div>
+      <SavedFoodsProvider>
+        <div>
+          <AppRoutes/>
+        </div>
+      </SavedFoodsProvider>
     )
 }
 

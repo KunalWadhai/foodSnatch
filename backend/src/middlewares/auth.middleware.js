@@ -13,7 +13,6 @@ const authFoodPartnerMiddleware = async (req, res, next) => {
     }
     try{
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        // Fix: findById expects the id directly, not an object
         let foodPartner = await foodPartnerModel.findById(decoded.id || decoded._id);
 
         if(!foodPartner){
@@ -23,7 +22,7 @@ const authFoodPartnerMiddleware = async (req, res, next) => {
         }
 
         req.foodPartner = foodPartner;
-       
+
         next();
     }
     catch(err){
@@ -42,7 +41,7 @@ const authUserMiddleware = async(req, res, next) => {
     }
     try{
         let decoded = jwt.verify(token, process.env.JWT_SECRET);
-        let user = await userModel.findById(decoded._id);
+        let user = await userModel.findById(decoded.id || decoded._id);
 
         if(!user){
             return res.status(401).json({

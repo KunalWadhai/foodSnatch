@@ -9,7 +9,6 @@ export default function Reels() {
   const containerRef = useRef(null);
   const [mutedMap, setMutedMap] = useState({});
   const [likes, setLikes] = useState({});
-  const [saved, setSaved] = useState({});
   const [comments, setComments] = useState({});
   const [videos, setVideos] = useState([]);
 
@@ -63,7 +62,6 @@ export default function Reels() {
       });
 
       setLikes(likesState);
-      setSaved(savedState);
     } catch (error) {
       console.log("Error fetching like/save status:", error);
       // Set default states if API calls fail
@@ -74,7 +72,6 @@ export default function Reels() {
         savedState[id] = false;
       });
       setLikes(likesState);
-      setSaved(savedState);
     }
   };
 
@@ -120,12 +117,12 @@ export default function Reels() {
       const response = await axios.post("http://localhost:3000/api/food/save", {foodId: videoId}, {withCredentials: true});
 
       if(response.data.message === "Food Saved Successfully"){
-        setSaved((prev) => ({
+        ((prev) => ({
           ...prev,
           [videoId]: true,
         }));
       } else if(response.data.message === "Saved Food Deleted Successfully."){
-        setSaved((prev) => ({
+        ((prev) => ({
           ...prev,
           [videoId]: false,
         }));
