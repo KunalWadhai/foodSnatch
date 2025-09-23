@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Loader2, CheckCircle2, XCircle } from "lucide-react";
+import { getApiUrl, axiosConfig } from "../../config/config";
 
 export default function FoodPartnerRegister() {
   const navigate = useNavigate();
@@ -22,9 +23,9 @@ export default function FoodPartnerRegister() {
     setLoading(true);
     try {
       const res = await axios.post(
-        "http://localhost:3000/api/auth/food-partner/register",
+        getApiUrl("/api/auth/food-partner/register"),
         { businessName, contactName, email, password, phone, address },
-        { withCredentials: true }
+        axiosConfig
       );
 
       console.log(res.data);

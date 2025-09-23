@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { Home, Bookmark, ArrowLeft } from "lucide-react";
-import { backendUrl } from "../../config/config";
+import { getApiUrl, axiosConfig } from "../../config/config";
 
 export default function Saved() {
   const [savedFoods, setSavedFoods] = useState([]);
@@ -16,7 +16,7 @@ export default function Saved() {
   const fetchSavedFoods = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${backendUrl}/api/food/save`, { withCredentials: true });
+      const response = await axios.get(getApiUrl("/api/food/save"), axiosConfig);
       console.log(response.data);
       if (response.data && response.data.savedFoods) {
         const savedFoods = response.data.savedFoods.map((item) => ({
@@ -48,7 +48,7 @@ export default function Saved() {
   const handleUnsave = async (foodId) => {
     console.log(foodId);
     try {
-      await axios.post(`${backendUrl}/api/food/save`, { foodId: foodId }, { withCredentials: true });
+      await axios.post(getApiUrl("/api/food/save"), { foodId: foodId }, axiosConfig);
       // Refresh the saved foods list after successful unsave
       fetchSavedFoods();
     } catch (error) {

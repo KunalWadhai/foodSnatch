@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { getApiUrl, axiosConfig } from "../../config/config";
 
 export default function FoodPartnerLogin() {
 
@@ -13,12 +14,11 @@ export default function FoodPartnerLogin() {
     const email = e.target.email.value;
     const password = e.target.password.value;
 
-    axios.post("http://localhost:3000/api/auth/food-partner/login", {
+    axios.post(getApiUrl("/api/auth/food-partner/login"), {
       email,
       password
-    },{
-      withCredentials: true
-    })
+    },
+    axiosConfig)
     .then( Response => {
         console.log(Response.data);
         navigate("/create-food");

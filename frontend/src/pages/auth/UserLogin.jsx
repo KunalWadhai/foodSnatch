@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import axios from "axios"
 import { useNavigate } from "react-router-dom";
+import { getApiUrl, axiosConfig } from "../../config/config";
 
 export default function UserLogin() {
 
@@ -14,12 +15,11 @@ export default function UserLogin() {
     const password = e.target.password.value;
 
     try{
-       const respone = await axios.post("http://localhost:3000/api/auth/user/login", {
+       const respone = await axios.post(getApiUrl("/api/auth/user/login"), {
           email,
           password
-        },{
-          withCredentials: true
-        });
+        },
+        axiosConfig);
        console.log(respone.data);
        navigate("/reels"); 
     }

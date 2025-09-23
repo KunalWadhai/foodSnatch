@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { getApiUrl, axiosConfig } from "../../config/config";
 
 export default function UserRegister() {
   
@@ -15,15 +16,12 @@ export default function UserRegister() {
      console.log(fullname + " " + email + " " + password);
 
      try {
-       const response = await axios.post("http://localhost:3000/api/auth/user/register", {
+       const response = await axios.post(getApiUrl("/api/auth/user/register"), {
          fullname,
          email,
          password
        },
-       {
-        // till we don't use this, untill n unless token not will save to cookies.
-         withCredentials:true
-       }
+       axiosConfig
       );
       // if cookie should to store at the frontend then we must use withCredentials:true
        console.log(response);
