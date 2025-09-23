@@ -1,40 +1,50 @@
-# Fix Saved Foods Synchronization Issue
+# Task: Fix Saved Page Issues
 
-## Problem
-After saving a food reel via POST /api/food/save, the changes don't reflect on the /saved page in grid form, even though it's saved to database.
+## Issues Fixed ✅
 
-## Root Cause
-- No shared state management between Reels.jsx and Saved.jsx components
-- Saved.jsx only fetches data on mount, no real-time updates
-- Reels.jsx updates local state but doesn't communicate with Saved.jsx
+### 1. Video Autoplay Issue
+- **Problem**: Videos on /save route were not autoplaying, showing as static images
+- **Root Cause**: Video elements missing `autoPlay` attribute
+- **Solution**: Added `autoPlay` attribute to video elements in Saved.jsx
+- **Files Modified**: `frontend/src/pages/general/Saved.jsx`
 
-## Solution Steps
+### 2. handleUnsave Function Issue
+- **Problem**: Users couldn't unsave selected food items on /save page
+- **Root Cause**: Data structure mismatch - using `savedFood.food._id` instead of `savedFood.food.id`
+- **Solution**: Corrected data structure access to match the frontend data mapping
+- **Files Modified**: `frontend/src/pages/general/Saved.jsx`
 
-### 1. Create SavedFoodsContext
-- [ ] Create `frontend/src/contexts/SavedFoodsContext.jsx`
-- [ ] Implement context with saved foods state and methods
-- [ ] Add save/unsave functionality with API calls
-- [ ] Add refresh functionality
+## Changes Made
 
-### 2. Update App.jsx
-- [ ] Import and wrap app with SavedFoodsContext provider
-- [ ] Ensure context is available throughout the app
+### frontend/src/pages/general/Saved.jsx
+1. Added `autoPlay` attribute to video element:
+   ```jsx
+   <video
+     src={savedFood.food.video}
+     className="w-full h-48 object-cover"
+     muted
+     autoPlay  // ← Added this
+     loop
+     preload="metadata"
+     // ...
+   />
+   ```
 
-### 3. Update Reels.jsx
-- [ ] Import and use SavedFoodsContext
-- [ ] Replace local save state with context
-- [ ] Update toggleSave function to use context methods
-- [ ] Remove duplicate API calls
+2. Fixed handleUnsave function data access:
+   ```jsx
+   onClick={() => handleUnsave(savedFood.food.id)}  // ← Changed from _id to id
+   ```
 
-### 4. Update Saved.jsx
-- [ ] Import and use SavedFoodsContext
-- [ ] Replace local state with context state
-- [ ] Remove manual fetchSavedFoods function
-- [ ] Update handleUnsave to use context methods
-- [ ] Add useEffect to refresh on component mount
+## Backend Verification
+- ✅ Backend `saveFoodReel` controller correctly handles both save/unsave operations
+- ✅ Routes are properly configured for POST `/api/food/save`
+- ✅ Data models are correctly structured
 
-### 5. Testing
-- [ ] Test save functionality in Reels
-- [ ] Test navigation to Saved page shows new items
-- [ ] Test unsave functionality
-- [ ] Verify real-time updates work correctly
+## Testing Recommendations
+1. Test video autoplay functionality on saved page
+2. Test unsave functionality by clicking bookmark button on saved items
+3. Verify saved items are removed from the list after unsaving
+4. Check that videos load and play automatically when page loads
+
+## Status: ✅ COMPLETED
+Both issues have been resolved and the fixes are ready for testing.

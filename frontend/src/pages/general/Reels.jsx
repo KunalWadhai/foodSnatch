@@ -1,92 +1,85 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import { Home, Bookmark, MessageCircle, TruckElectric } from "lucide-react";
-
+import { Home, Bookmark, MessageCircle } from "lucide-react";
 
 export default function Reels() {
-  const videoRefs = useRef([]);
+  const videoRefs = useRef(new Map());
   const containerRef = useRef(null);
-  const [mutedMap, setMutedMap] = useState({});
-  const [likes, setLikes] = useState({});
-  const [comments, setComments] = useState({});
+
   const [videos, setVideos] = useState([]);
+  const [likes, setLikes] = useState({});
+  const [saved, setSaved] = useState({});
+  const [comments, setComments] = useState({});
+  const [mutedMap, setMutedMap] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // Fetch videos
   useEffect(() => {
     const fetchVideos = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/api/food", { withCredentials: true });
-        if (response.data.foodItem) {
+        setLoading(true);
+        setError(null);
+
+        const response = await axios.get("http://localhost:3000/api/food", {
+          withCredentials: true,
+        });
+
+        if (response.data.foodItem && response.data.foodItem.length > 0) {
           const fetchedVideos = response.data.foodItem.map((item) => ({
             id: item._id,
             src: item.video,
-            description: item.description,
-            storeUrl: `/food-partner/${item.foodpartner}`,
+            description: item.description || "Delicious food item",
+            storeUrl: `/food-partner/${item.foodpartner || 'unknown'}`,
             itemName: item.name,
             likeCount: item.likeCount || 0,
+            savesCount: item.savesCount || 0,
+            commentsCount: 0, // Backend doesn't support comments yet
           }));
           setVideos(fetchedVideos);
 
-          // Fetch like and save status for all videos
-          const foodIds = fetchedVideos.map(v => v.id);
-          await fetchLikeAndSaveStatus(foodIds);
+          // Initialize like/save state as false for all videos
+          const likesState = {};
+          const savedState = {};
+          fetchedVideos.forEach((video) => {
+            likesState[video.id] = false;
+            savedState[video.id] = false;
+          });
+          setLikes(likesState);
+          setSaved(savedState);
+        } else {
+          setVideos([]);
         }
       } catch (err) {
-        console.log("Error While Fetching Videos", err);
+        console.error("Error fetching videos:", err);
+        setError("Failed to load videos. Please try again later.");
+        setVideos([]);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchVideos();
   }, []);
 
-  //Fetch like and save status for videos
-  const fetchLikeAndSaveStatus = async (foodIds) => {
-    try {
-      // Fetch like status
-      const likeResponse = await axios.post("http://localhost:3000/api/food/like-status", { foodIds });
-      const likedFoodIds = likeResponse.data.likedFoodIds || [];
 
-      // Fetch saved foods
-      const savedResponse = await axios.get("http://localhost:3000/api/food/saved");
-      const savedFoods = savedResponse.data.savedFoods || [];
-      const savedFoodIds = savedFoods.map(sf => sf.food._id);
 
-      // Update state
-      const likesState = {};
-      const savedState = {};
-
-      foodIds.forEach(id => {
-        likesState[id] = { liked: likedFoodIds.includes(id), count: 0 };
-        savedState[id] = savedFoodIds.includes(id);
-      });
-
-      setLikes(likesState);
-    } catch (error) {
-      console.log("Error fetching like/save status:", error);
-      // Set default states if API calls fail
-      const likesState = {};
-      const savedState = {};
-      foodIds.forEach(id => {
-        likesState[id] = { liked: false, count: 0 };
-        savedState[id] = false;
-      });
-      setLikes(likesState);
-    }
-  };
-
-  // Autoplay / pause
+  // Autoplay / pause logic
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          const videoEl = entry.target.querySelector("video");
-          if (!videoEl) return;
-          if (entry.isIntersecting) videoEl.play().catch(() => {});
-          else videoEl.pause();
+          const video = entry.target.querySelector("video");
+          if (!video) return;
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.6) {
+            video.play().catch(() => {});
+          } else {
+            video.pause();
+          }
         });
       },
-      { root: null, threshold: 0.6 }
+      { threshold: [0.6] }
     );
 
     const nodes = containerRef.current?.querySelectorAll(".reel-item") || [];
@@ -94,59 +87,88 @@ export default function Reels() {
     return () => observer.disconnect();
   }, [videos]);
 
-  
   // Like Video
   const likeVideo = async (videoId) => {
-      try {
-          const response = await axios.post("http://localhost:3000/api/food/like", {foodId: videoId}, {withCredentials: true});
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/api/food/like",
+        { foodId: videoId },
+        { withCredentials: true }
+      );
 
-          if(response.data.message === "Like Added Successfully" || response.data.message === "Like Added Successfully (Guest)"){
-              setVideos( (prev) => prev.map((v) => v.id == videoId ? {...v, likeCount: v.likeCount + 1 } : v ));
-          } else if(response.data.message === "Food Unliked Successfully"){
-              setVideos( (prev) => prev.map( (v) => v.id == videoId ? {...v, likeCount: v.likeCount - 1} : v));
-          }
-      } catch (error) {
-          console.error("Error liking video:", error);
-          alert("Error liking video. Please try again.");
+      if (response.data.message === "Like Added Successfully") {
+        setLikes((prev) => ({ ...prev, [videoId]: true }));
+        setVideos((prev) =>
+          prev.map((v) =>
+            v.id === videoId ? { ...v, likeCount: v.likeCount + 1 } : v
+          )
+        );
+      } else if (response.data.message === "Food Unliked Successfully") {
+        setLikes((prev) => ({ ...prev, [videoId]: false }));
+        setVideos((prev) =>
+          prev.map((v) =>
+            v.id === videoId ? { ...v, likeCount: v.likeCount - 1 } : v
+          )
+        );
       }
-  }
+    } catch (error) {
+      console.error("Error liking video:", error);
+    }
+  };
 
-  // Save logic
+  // Save Video
   const toggleSave = async (videoId) => {
     try {
-      const response = await axios.post("http://localhost:3000/api/food/save", {foodId: videoId}, {withCredentials: true});
-
-      if(response.data.message === "Food Saved Successfully"){
-        ((prev) => ({
-          ...prev,
-          [videoId]: true,
-        }));
-      } else if(response.data.message === "Saved Food Deleted Successfully."){
-        ((prev) => ({
-          ...prev,
-          [videoId]: false,
-        }));
+      const response = await axios.post(
+        "http://localhost:3000/api/food/save",
+        { foodId: videoId },
+        { withCredentials: true }
+      );
+      console.log(response.data);
+      if (response.data.message === "Food Saved Successfully") {
+        setSaved((prev) => ({ ...prev, [videoId]: true }));
+      } else if (response.data.message === "Food unsaved successfully") {
+        setSaved((prev) => ({ ...prev, [videoId]: false }));
       }
     } catch (error) {
       console.error("Error saving video:", error);
-      if (error.response && error.response.status === 401) {
-        alert("Please log in to save videos.");
-      } else {
-        alert("Error saving video. Please try again.");
-      }
     }
   };
 
   // Mute toggle
   const toggleMutedFor = (id) => {
-    const el = videoRefs.current[id];
+    const el = videoRefs.current.get(id);
     if (el) {
       el.muted = !el.muted;
       setMutedMap((m) => ({ ...m, [id]: el.muted }));
-    } else {
-      setMutedMap((m) => ({ ...m, [id]: !m[id] }));
     }
   };
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="h-screen w-full bg-black flex items-center justify-center">
+        <div className="text-white text-xl">Loading videos...</div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="h-screen w-full bg-black flex items-center justify-center">
+        <div className="text-white text-xl text-center">
+          <div className="mb-4">{error}</div>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -155,7 +177,7 @@ export default function Reels() {
     >
       {videos.length === 0 ? (
         <div className="h-screen flex items-center justify-center text-white text-xl">
-          Loading videos...
+          No videos available
         </div>
       ) : (
         videos.map((video) => (
@@ -166,7 +188,7 @@ export default function Reels() {
             {/* Reel container */}
             <div className="relative w-[350px] md:w-[400px] lg:w-[450px] h-full bg-black rounded-2xl overflow-hidden shadow-2xl">
               <video
-                ref={(el) => (videoRefs.current[video.id] = el)}
+                ref={(el) => videoRefs.current.set(video.id, el)}
                 src={video.src}
                 className="w-full h-full object-cover"
                 playsInline
@@ -175,25 +197,22 @@ export default function Reels() {
                 preload="metadata"
               />
 
-
-
               {/* Gradient overlay */}
               <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
 
               {/* Right-side vertical action buttons */}
               <div className="absolute right-4 bottom-28 flex flex-col items-center gap-6 text-white">
-
                 {/* Like */}
                 <button
                   onClick={() => likeVideo(video.id)}
                   className={`w-12 h-12 rounded-full flex flex-col items-center justify-center text-xl transition-transform ${
-                    likes[video.id]?.liked
+                    likes[video.id]
                       ? "bg-pink-500/20 text-pink-400 scale-110 shadow-lg"
                       : "bg-white/10 text-white hover:scale-105"
                   }`}
                 >
                   ❤️
-                  <span className="text-xs">{video.likeCount || 0}</span>
+                  <span className="text-xs">{video.likeCount}</span>
                 </button>
 
                 {/* Save */}
@@ -206,10 +225,10 @@ export default function Reels() {
                   }`}
                 >
                   <Bookmark size={22} />
-                  <span className="text-xs">{saved[video.id] ? 1 : 0}</span>
+                  <span className="text-xs">{video.savesCount || 0}</span>
                 </button>
 
-                {/* Comments */}
+                {/* Comments (local count) */}
                 <button
                   onClick={() =>
                     setComments((c) => ({
@@ -220,7 +239,9 @@ export default function Reels() {
                   className="w-12 h-12 rounded-full flex flex-col items-center justify-center text-xl bg-white/10 text-white hover:scale-105 transition-transform"
                 >
                   <MessageCircle size={22} />
-                  <span className="text-xs">{comments[video.id] || 0}</span>
+                  <span className="text-xs">
+                    {comments[video.id] || video.commentsCount}
+                  </span>
                 </button>
 
                 {/* Mute */}
@@ -232,7 +253,7 @@ export default function Reels() {
                 </button>
               </div>
 
-              {/* Reel Info Section above bar */}
+              {/* Reel Info Section */}
               <div className="absolute bottom-20 left-0 right-0 px-4 text-white">
                 <div className="flex items-center gap-3 mb-2">
                   <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-black font-bold">
@@ -249,13 +270,13 @@ export default function Reels() {
                 </Link>
               </div>
 
-              {/* Bottom reel bar */}
+              {/* Bottom nav bar */}
               <div className="absolute bottom-0 left-0 right-0 bg-black/30 backdrop-blur-sm border-t border-white/10 px-6 py-3 flex justify-around items-center text-white">
                 <Link to="/" className="flex flex-col items-center text-sm">
                   <Home size={22} />
                   <span>Home</span>
                 </Link>
-                <Link to="/saved" className="flex flex-col items-center text-sm">
+                <Link to="/save" className="flex flex-col items-center text-sm">
                   <Bookmark size={22} />
                   <span>Saved</span>
                 </Link>

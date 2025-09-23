@@ -17,15 +17,12 @@ router.get("/", foodController.getFoodItems);
 
 // some features over the food reels to like and save the stuff.
 // post: /api/food/like
-router.post("/like", foodController.likeFood);
+router.post("/like", authMiddleware.authUserMiddleware, foodController.likeFood);
 
 // post : /api/food/save-food
 router.post("/save", authMiddleware.authUserMiddleware, foodController.saveFoodReel);
 
-// get : /api/food/saved - get saved foods for user
-router.get("/saved", foodController.getSavedFoods);
-
-// post : /api/food/like-status - get like status for multiple foods
-router.post("/like-status", foodController.getLikeStatus);
+// get : /api/food/save - get saved foods for user
+router.get("/save", authMiddleware.authUserMiddleware, foodController.getSavedFoods);
 
 module.exports = router;

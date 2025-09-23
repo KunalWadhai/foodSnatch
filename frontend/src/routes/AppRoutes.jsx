@@ -22,7 +22,7 @@ const AppRoutes = () => {
                 <Route path="/" element={<Home/>}></Route>
                 <Route path="/create-food" element={<CreateFood/>}></Route>
                 <Route path="/reels" element={<Reels/>}></Route>
-                <Route path="/saved" element={<Saved/>}></Route>
+                <Route path="/save" element={<Saved/>}></Route>
                 <Route path="/food-partner/:profile" element={<FoodPartnerProfile/>}></Route>
             </Routes>
         </Router>

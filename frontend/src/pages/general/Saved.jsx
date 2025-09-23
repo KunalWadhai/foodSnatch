@@ -1,3 +1,47 @@
+// import React, { useEffect, useState } from 'react'
+// import axios from 'axios'
+// import ReelFeed from '../../components/ReelFeed'
+
+// const Saved = () => {
+//     const [ videos, setVideos ] = useState([])
+
+//     useEffect(() => {
+//         axios.get("http://localhost:3000/api/food/save", { withCredentials: true })
+//             .then(response => {
+//                 const savedFoods = response.data.savedFoods.map((item) => ({
+//                     _id: item.food._id,
+//                     video: item.food.video,
+//                     description: item.food.description,
+//                     likeCount: item.food.likeCount,
+//                     savesCount: item.food.savesCount,
+//                     commentsCount: item.food.commentsCount,
+//                     foodPartner: item.food.foodPartner,
+//                 }))
+//                 setVideos(savedFoods)
+//             })
+//     }, [])
+
+//     const removeSaved = async (item) => {
+//         try {
+//             await axios.post("http://localhost:3000/api/food/save", { foodId: item._id }, { withCredentials: true })
+//             setVideos((prev) => prev.map((v) => v._id === item._id ? { ...v, savesCount: Math.max(0, (v.savesCount ?? 1) - 1) } : v))
+//         } catch {
+//             // noop
+//         }
+//     }
+
+//     return (
+//         <ReelFeed
+//             items={videos}
+//             onSave={removeSaved}
+//             emptyMessage="No saved videos yet."
+//         />
+//     )
+// }
+
+// export default Saved
+
+
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
@@ -14,22 +58,44 @@ export default function Saved() {
   const fetchSavedFoods = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("http://localhost:3000/api/food/saved", { withCredentials: true });
-      setSavedFoods(response.data.savedFoods || []);
+      const response = await axios.get("http://localhost:3000/api/food/save", { withCredentials: true });
+      console.log(response.data);
+      if (response.data && response.data.savedFoods) {
+        const savedFoods = response.data.savedFoods.map((item) => ({
+          id: item.id,
+          food: {
+            id: item.food._id,
+            name: item.food.name,
+            video: item.food.video,
+            description: item.food.description,
+            likeCount: item.food.likeCount,
+            savesCount: item.food.savesCount,
+            commentsCount: item.food.commentsCount || 0,
+            foodpartner: item.food.foodpartner
+          },
+          createdAt: item.createdAt
+        }));
+        setSavedFoods(savedFoods);
+      } else {
+        setSavedFoods([]);
+      }
     } catch (error) {
       console.error("Error fetching saved foods:", error);
+      setSavedFoods([]);
     } finally {
       setLoading(false);
     }
   };
 
   const handleUnsave = async (foodId) => {
+    console.log(foodId);
     try {
-      await axios.post("http://localhost:3000/api/food/save", { foodId }, { withCredentials: true });
-      // Refresh the saved foods list
+      await axios.post("http://localhost:3000/api/food/save", { foodId: foodId }, { withCredentials: true });
+      // Refresh the saved foods list after successful unsave
       fetchSavedFoods();
     } catch (error) {
       console.error("Error unsaving food:", error);
+      // Optionally show user feedback here
     }
   };
 
@@ -81,11 +147,16 @@ export default function Saved() {
                     src={savedFood.food.video}
                     className="w-full h-48 object-cover"
                     muted
+                    autoPlay
                     loop
                     preload="metadata"
+                    onError={(e) => {
+                      console.error('Video failed to load:', savedFood.food.video);
+                      e.target.style.display = 'none';
+                    }}
                   />
                   <button
-                    onClick={() => handleUnsave(savedFood.food._id)}
+                    onClick={() => handleUnsave(savedFood.food.id)}
                     className="absolute top-2 right-2 w-8 h-8 bg-black/50 rounded-full flex items-center justify-center hover:bg-black/70 transition-colors"
                   >
                     <Bookmark size={16} className="text-white" />
@@ -130,3 +201,4 @@ export default function Saved() {
     </div>
   );
 }
+
