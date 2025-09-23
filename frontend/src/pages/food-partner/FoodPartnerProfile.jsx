@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import { backendUrl } from "../../config/config";
 
 export default function FoodPartnerProfile() {
   const { profile } = useParams(); 
@@ -9,7 +10,7 @@ export default function FoodPartnerProfile() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:3000/api/food-partner/${profile}`, {
+      .get(`${backendUrl}/api/food-partner/${profile}`, {
         withCredentials: true,
       })
       .then((res) => {

@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { Home, Bookmark, MessageCircle } from "lucide-react";
+import { backendUrl } from "../../config/config";
 
 export default function Reels() {
   const videoRefs = useRef(new Map());
@@ -22,7 +23,7 @@ export default function Reels() {
         setLoading(true);
         setError(null);
 
-        const response = await axios.get("http://localhost:3000/api/food", {
+        const response = await axios.get(`${backendUrl}/api/food`, {
           withCredentials: true,
         });
 
@@ -91,7 +92,7 @@ export default function Reels() {
   const likeVideo = async (videoId) => {
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/food/like",
+        `{backendUrl}/api/food/like`,
         { foodId: videoId },
         { withCredentials: true }
       );
@@ -120,7 +121,7 @@ export default function Reels() {
   const toggleSave = async (videoId) => {
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/food/save",
+        `${backendUrl}/api/food/save`,
         { foodId: videoId },
         { withCredentials: true }
       );

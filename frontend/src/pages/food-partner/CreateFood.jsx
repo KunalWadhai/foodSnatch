@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Upload, Loader2, CheckCircle2 } from "lucide-react"; 
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { backendUrl } from "../../config/config";
 
 const FoodPartnerCreate = () => {
   const [video, setVideo] = useState(null);
@@ -30,7 +31,7 @@ const FoodPartnerCreate = () => {
     formData.append("video", video);
     formData.append("description", description);
 
-    axios.post("http://localhost:3000/api/food", formData, { withCredentials: true })
+    axios.post(`${backendUrl}/api/food`, formData, { withCredentials: true })
       .then((response) => {
         console.log(response.data);
         setLoading(false);
