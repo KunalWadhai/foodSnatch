@@ -16,8 +16,8 @@ export default function Home() {
 
         <nav className="hidden md:flex gap-6 text-gray-300">
           <Link to="/" className="hover:text-white transition">Home</Link>
-          <Link to="/about" className="hover:text-white transition">About</Link>
-          <Link to="/contact" className="hover:text-white transition">Contact</Link>
+          <Link to="/About" className="hover:text-white transition">About</Link>
+          <Link to="/Contact" className="hover:text-white transition">Contact</Link>
         </nav>
       </header>
 

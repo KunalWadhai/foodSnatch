@@ -9,6 +9,8 @@ import CreateFood from "../pages/food-partner/CreateFood";
 import Reels from "../pages/general/Reels"
 import Saved from "../pages/general/Saved"
 import FoodPartnerProfile from "../pages/food-partner/FoodPartnerProfile";
+import About from "../pages/general/About";
+import Contact from "../pages/general/Contact"
 
 
 const AppRoutes = () => {
@@ -24,6 +26,8 @@ const AppRoutes = () => {
                 <Route path="/reels" element={<Reels/>}></Route>
                 <Route path="/save" element={<Saved/>}></Route>
                 <Route path="/food-partner/:profile" element={<FoodPartnerProfile/>}></Route>
+                <Route path="/About" element={<About/>}></Route>
+                <Route path="/Contact" element={<Contact/>}></Route>
             </Routes>
         </Router>
     )

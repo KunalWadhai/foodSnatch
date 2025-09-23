@@ -51,10 +51,11 @@ export default function UserRegister() {
           </button>
         </form>
 
-        <button className="w-full mt-4 py-3 rounded-lg bg-white/10 hover:bg-white/20 transition text-white">
-          Sign up with Google
-        </button>
-
+        {/**
+              <button className="w-full mt-4 py-3 rounded-lg bg-white/10 hover:bg-white/20 transition text-white">
+            Sign up with Google
+          </button>
+         */}
         <p className="text-center text-gray-400 mt-6">
           Already have an account?{" "}
           <Link to="/user/login" className="text-purple-400 hover:text-purple-300">

@@ -43,9 +43,13 @@ export default function FoodPartnerLogin() {
           </button>
         </form>
 
+        {/** 
         <button className="w-full mt-4 py-3 rounded-lg bg-white/10 hover:bg-white/20 transition text-white">
           Login with Google
         </button>
+
+        */}
+        
 
         <p className="text-center text-gray-400 mt-6">
           Don’t have an account?{" "}
