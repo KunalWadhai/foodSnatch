@@ -1,6 +1,6 @@
 // API Configuration
 export const API_CONFIG = {
-  BASE_URL: import.meta.env.VITE_BACKEND_URL || import.meta.env.BACKEND_URL || 'http://localhost:3000',
+  BASE_URL: import.meta.env.BACKEND_URL,
 
   // Authentication endpoints
   AUTH: {
