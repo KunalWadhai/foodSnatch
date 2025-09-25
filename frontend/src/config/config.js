@@ -31,9 +31,6 @@ export const getApiUrl = (endpoint) => {
 // Axios default configuration for JSON requests
 export const axiosConfig = {
   withCredentials: true,
-  headers: {
-    'Content-Type': 'application/json',
-  },
 };
 
 // Axios configuration for multipart/form-data requests (no Content-Type header set explicitly)
