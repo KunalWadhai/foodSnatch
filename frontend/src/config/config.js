@@ -28,12 +28,18 @@ export const getApiUrl = (endpoint) => {
   return `${API_CONFIG.BASE_URL}${endpoint}`;
 };
 
-// Axios default configuration
+// Axios default configuration for JSON requests
 export const axiosConfig = {
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
   },
+};
+
+// Axios configuration for multipart/form-data requests (no Content-Type header set explicitly)
+export const axiosMultipartConfig = {
+  withCredentials: true,
+  // Let axios set Content-Type with proper boundary for multipart/form-data
 };
 
 // Legacy export for backward compatibility
