@@ -14,6 +14,7 @@ const cors = require("cors")
 // browser runs on same-origin policy (SOP)
 app.use(cors({
     origin: process.env.FRONTEND_URL,
+    //origin: process.env.NODE_ENV === 'production' ? process.env.FRONTEND_URL : ['http://localhost:5173', 'http://localhost:5174'],
     credentials: true
 }));
 
