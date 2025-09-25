@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Upload, Loader2, CheckCircle2 } from "lucide-react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { getApiUrl, axiosConfig } from "../../config/config";
 
 const FoodPartnerCreate = () => {
   const [video, setVideo] = useState(null);
@@ -31,7 +30,7 @@ const FoodPartnerCreate = () => {
     formData.append("video", video);
     formData.append("description", description);
 
-    axios.post(getApiUrl("/api/food"), formData, axiosConfig)
+    axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/food`, formData, {withCredentials: true})
       .then((response) => {
         console.log(response.data);
         setLoading(false);

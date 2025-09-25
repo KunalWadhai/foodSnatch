@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { backendUrl } from "../../config/config";
+
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 export default function FoodPartnerProfile() {
   const { profile } = useParams(); 

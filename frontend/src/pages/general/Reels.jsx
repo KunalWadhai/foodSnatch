@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { Home, Bookmark, MessageCircle } from "lucide-react";
-import { getApiUrl, axiosConfig } from "../../config/config";
 
 export default function Reels() {
   const videoRefs = useRef(new Map());
@@ -23,7 +22,7 @@ export default function Reels() {
         setLoading(true);
         setError(null);
 
-        const response = await axios.get(getApiUrl("/api/food"), axiosConfig);
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/food`, { withCredentials: true });
 
         if (response.data.foodItem && response.data.foodItem.length > 0) {
           const fetchedVideos = response.data.foodItem.map((item) => ({
@@ -90,9 +89,9 @@ export default function Reels() {
   const likeVideo = async (videoId) => {
     try {
       const response = await axios.post(
-        getApiUrl("/api/food/like"),
+        `${import.meta.env.VITE_BACKEND_URL}/api/food/like`,
         { foodId: videoId },
-        axiosConfig
+        { withCredentials: true }
       );
 
       if (response.data.message === "Like Added Successfully") {
@@ -119,9 +118,9 @@ export default function Reels() {
   const toggleSave = async (videoId) => {
     try {
       const response = await axios.post(
-        getApiUrl("/api/food/save"),
+        `${import.meta.env.VITE_BACKEND_URL}/api/food/save`,
         { foodId: videoId },
-        axiosConfig
+        { withCredentials: true }
       );
       console.log(response.data);
       if (response.data.message === "Food Saved Successfully") {

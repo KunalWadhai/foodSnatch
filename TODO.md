@@ -1,0 +1,8 @@
+- [x] Edit frontend/src/pages/food-partner/FoodPartnerProfile.jsx: Remove import from config, replace backendUrl with import.meta.env.VITE_BACKEND_URL
+- [x] Edit frontend/src/pages/auth/UserLogin.jsx: Remove import from config, replace getApiUrl with direct string, remove axiosConfig
+- [x] Edit frontend/src/pages/auth/FoodPartnerRegister.jsx: Remove import from config, replace getApiUrl with direct string, remove axiosConfig
+- [x] Edit frontend/src/pages/general/Reels.jsx: Remove import from config, replace getApiUrl with direct string, remove axiosConfig
+- [x] Edit frontend/src/pages/food-partner/CreateFood.jsx: Remove import from config, replace getApiUrl with direct string
+- [x] Edit frontend/src/pages/auth/FoodPartnerLogin.jsx: Remove import from config, replace getApiUrl with direct string, remove axiosConfig
+- [x] Edit frontend/src/pages/general/Saved.jsx: Remove import from config, replace getApiUrl with direct string, remove axiosConfig
+- [x] Edit frontend/src/pages/auth/UserRegister.jsx: Remove import from config, replace getApiUrl with direct string, remove axiosConfig
