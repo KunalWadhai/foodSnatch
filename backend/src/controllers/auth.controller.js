@@ -31,7 +31,7 @@ const registerUser = async (req, res) => {
         });
 
        let token = jwt.sign({id:user._id}, process.env.JWT_SECRET);
-       res.cookie("token", token, { httpOnly: false});
+       res.cookie("token", token, { httpOnly: true, secure: true, sameSite: 'none'});
 
        res.status(201).json({
            message:"User Created Successfully",
@@ -64,7 +64,7 @@ const loginUser = async (req, res) => {
     if(isPasswordValid){
         const token = jwt.sign({id:user._id}, process.env.JWT_SECRET);
         //console.log(token);
-        res.cookie("token", token, { httpOnly: false});
+        res.cookie("token", token, { httpOnly: true, secure: true, sameSite: 'none'});
 
         return res.status(200).json({
         message : "User logged in successfully"
@@ -107,7 +107,7 @@ const registerFoodPartner = async (req, res) => {
             address
         });
         let token = jwt.sign({id:foodPartner._id}, process.env.JWT_SECRET);
-        res.cookie("token", token, { httpOnly: false});
+        res.cookie("token", token, { httpOnly: true, secure: true, sameSite: 'none'});
         res.status(201).json({
             message : "Food Partner Created Successfully",
             foodPartner:{
@@ -139,7 +139,7 @@ const loginFoodPartner = async (req, res) => {
     const isFoodPartnerPasswordValid = await bcrypt.compare(password, foodPartner.password);
     if(isFoodPartnerPasswordValid){
         let token = jwt.sign({id:foodPartner._id}, process.env.JWT_SECRET);
-        res.cookie("token", token, { httpOnly: false});
+        res.cookie("token", token, { httpOnly: true, secure: true, sameSite: 'none'});
 
         return res.status(200).json({
             message: "Food Partner Logged In Successfully"
