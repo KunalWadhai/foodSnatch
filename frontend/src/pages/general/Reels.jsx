@@ -168,115 +168,112 @@ export default function Reels() {
   }
 
   return (
-    <div className="h-screen w-full bg-black flex items-center justify-center">
-      {/* Wrapper for desktop to mimic mobile view */}
-      <div
-        ref={containerRef}
-        className="h-full w-full max-w-sm md:max-w-md lg:max-w-lg bg-black overflow-y-scroll snap-y snap-mandatory scroll-smooth relative"
-      >
-        {videos.length === 0 ? (
-          <div className="h-screen flex items-center justify-center text-white text-xl">
-            No videos available
-          </div>
-        ) : (
-          videos.map((video) => (
-            <div
-              key={video.id}
-              className="reel-item relative h-screen w-full flex items-center justify-center snap-center"
-            >
-              {/* Video Fullscreen */}
-              <video
-                ref={(el) => videoRefs.current.set(video.id, el)}
-                src={video.src}
-                className="w-full h-full object-cover"
-                playsInline
-                autoPlay
-                loop
-                preload="metadata"
-              />
+  <div className="h-screen w-full bg-black flex items-center justify-center">
+    {/* Wrapper mimicking mobile frame */}
+    <div
+      ref={containerRef}
+      className="h-full w-full max-w-sm md:max-w-md lg:max-w-lg aspect-[9/16] bg-black overflow-y-scroll snap-y snap-mandatory scroll-smooth relative rounded-xl shadow-xl"
+    >
+      {videos.length === 0 ? (
+        <div className="h-full flex items-center justify-center text-white text-xl">
+          No videos available
+        </div>
+      ) : (
+        videos.map((video) => (
+          <div
+            key={video.id}
+            className="reel-item relative h-full w-full flex items-center justify-center snap-center"
+          >
+            {/* Video inside fixed aspect ratio */}
+            <video
+              ref={(el) => videoRefs.current.set(video.id, el)}
+              src={video.src}
+              className="w-full h-full object-cover rounded-xl"
+              playsInline
+              autoPlay
+              loop
+              preload="metadata"
+            />
 
-              {/* Floating hearts */}
-              {hearts
-                .filter((h) => h.videoId === video.id)
-                .map((heart) => (
-                  <div
-                    key={heart.id}
-                    className="absolute inset-0 flex items-center justify-center animate-bounce"
-                  >
-                    <span className="text-6xl text-pink-500 drop-shadow-lg">
-                      ❤️
-                    </span>
-                  </div>
-                ))}
-
-              {/* Right side actions */}
-              <div className="absolute right-4 bottom-32 flex flex-col items-center gap-6 text-white">
-                {/* Like */}
-                <button
-                  onClick={() => likeVideo(video.id)}
-                  className={`w-12 h-12 rounded-full flex flex-col items-center justify-center transition-transform ${
-                    likes[video.id]
-                      ? "bg-pink-600 text-white scale-110 shadow-lg"
-                      : "bg-black/40 border border-white/30 text-white hover:scale-105"
-                  }`}
+            {/* Floating hearts */}
+            {hearts
+              .filter((h) => h.videoId === video.id)
+              .map((heart) => (
+                <div
+                  key={heart.id}
+                  className="absolute inset-0 flex items-center justify-center animate-bounce"
                 >
-                  ❤️
-                  <span className="text-xs">{video.likeCount}</span>
-                </button>
-
-                {/* Save */}
-                <button
-                  onClick={() => toggleSave(video.id)}
-                  className={`w-12 h-12 rounded-full flex flex-col items-center justify-center transition-transform ${
-                    saved[video.id]
-                      ? "bg-yellow-400 text-black scale-110 shadow-lg"
-                      : "bg-black/40 border border-white/30 text-white hover:scale-105"
-                  }`}
-                >
-                  <Bookmark size={22} />
-                  <span className="text-xs">{video.savesCount || 0}</span>
-                </button>
-              </div>
-
-              {/* Bottom info */}
-              <div className="absolute bottom-20 left-4 right-4 text-white">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center font-bold">
-                    {video.itemName?.[0] || "F"}
-                  </div>
-                  <span className="font-semibold">{video.itemName}</span>
+                  <span className="text-6xl text-pink-500 drop-shadow-lg">
+                    ❤️
+                  </span>
                 </div>
-                <p className="text-sm text-gray-200 mb-2">{video.description}</p>
-                <Link
-                  to={video.storeUrl}
-                  className="inline-block px-4 py-2 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 hover:shadow-xl transition font-semibold text-sm"
-                >
-                  Visit Store
-                </Link>
-              </div>
+              ))}
 
-              {/* Bottom nav */}
-              <div className="absolute bottom-0 left-0 right-0 bg-black/30 backdrop-blur-md border-t border-white/10 px-6 py-3 flex justify-around items-center text-white">
-                <Link to="/" className="flex flex-col items-center text-sm">
-                  <Home size={22} />
-                  <span>Home</span>
-                </Link>
-                <Link to="/save" className="flex flex-col items-center text-sm">
-                  <Bookmark size={22} />
-                  <span>Saved</span>
-                </Link>
-                <Link
-                  to="/profile"
-                  className="flex flex-col items-center text-sm"
-                >
-                  <User size={22} />
-                  <span>Profile</span>
-                </Link>
-              </div>
+            {/* Right side actions */}
+            <div className="absolute right-4 bottom-32 flex flex-col items-center gap-6 text-white">
+              {/* Like */}
+              <button
+                onClick={() => likeVideo(video.id)}
+                className={`w-12 h-12 rounded-full flex flex-col items-center justify-center transition-transform ${
+                  likes[video.id]
+                    ? "bg-pink-600 text-white scale-110 shadow-lg"
+                    : "bg-black/40 border border-white/30 text-white hover:scale-105"
+                }`}
+              >
+                ❤️
+                <span className="text-xs">{video.likeCount}</span>
+              </button>
+
+              {/* Save */}
+              <button
+                onClick={() => toggleSave(video.id)}
+                className={`w-12 h-12 rounded-full flex flex-col items-center justify-center transition-transform ${
+                  saved[video.id]
+                    ? "bg-yellow-400 text-black scale-110 shadow-lg"
+                    : "bg-black/40 border border-white/30 text-white hover:scale-105"
+                }`}
+              >
+                <Bookmark size={22} />
+                <span className="text-xs">{video.savesCount || 0}</span>
+              </button>
             </div>
-          ))
-        )}
-      </div>
+
+            {/* Bottom info */}
+            <div className="absolute bottom-20 left-4 right-4 text-white">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center font-bold">
+                  {video.itemName?.[0] || "F"}
+                </div>
+                <span className="font-semibold">{video.itemName}</span>
+              </div>
+              <p className="text-sm text-gray-200 mb-2">{video.description}</p>
+              <Link
+                to={video.storeUrl}
+                className="inline-block px-4 py-2 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 hover:shadow-xl transition font-semibold text-sm"
+              >
+                Visit Store
+              </Link>
+            </div>
+
+            {/* Bottom nav */}
+            <div className="absolute bottom-0 left-0 right-0 bg-black/30 backdrop-blur-md border-t border-white/10 px-6 py-3 flex justify-around items-center text-white rounded-b-xl">
+              <Link to="/" className="flex flex-col items-center text-sm">
+                <Home size={22} />
+                <span>Home</span>
+              </Link>
+              <Link to="/save" className="flex flex-col items-center text-sm">
+                <Bookmark size={22} />
+                <span>Saved</span>
+              </Link>
+              <Link to="/profile" className="flex flex-col items-center text-sm">
+                <User size={22} />
+                <span>Profile</span>
+              </Link>
+            </div>
+          </div>
+        ))
+      )}
     </div>
-  );
+  </div>
+);
 }
