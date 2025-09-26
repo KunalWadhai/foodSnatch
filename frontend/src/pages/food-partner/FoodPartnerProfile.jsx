@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Loader2, MapPin, Phone } from "lucide-react";
+import { Loader2, MapPin, Phone, ArrowLeft } from "lucide-react";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -9,6 +9,7 @@ export default function FoodPartnerProfile() {
   const { profile } = useParams(); 
   const [partner, setPartner] = useState(null);
   const [videos, setVideos] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios
@@ -60,6 +61,16 @@ export default function FoodPartnerProfile() {
               <p className="text-3xl font-bold">{videos.length}</p>
               <p className="text-sm text-gray-400">Videos</p>
             </div>
+          </div>
+
+          {/* Back Button */}
+          <div className="mt-8 flex justify-center">
+            <button
+              onClick={() => navigate("/")}
+              className="flex items-center gap-2 px-6 py-3 rounded-xl font-semibold bg-gradient-to-r from-purple-600 via-pink-600 to-red-500 shadow-lg hover:shadow-pink-500/30 hover:scale-105 transition text-white"
+            >
+              <ArrowLeft size={18} /> Back to Foods
+            </button>
           </div>
         </div>
 
