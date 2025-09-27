@@ -258,7 +258,7 @@ export default function Reels() {
               {/* Save */}
               <button
                 onClick={() => toggleSave(video.id)}
-                className={`w-12 h-12 rounded-full flex flex-col items-center justify-center transition-transform ${
+                className={`w-12 h-12 rounded-full flex flex-col items-center hover:cursor-pointer justify-center transition-transform ${
                   saved[video.id]
                     ? "bg-yellow-400 text-black scale-110 shadow-lg hover:bg-yellow-500 hover:scale-125"
                     : "bg-black/40 border border-white/30 text-white hover:bg-white/20 hover:border-white/50 hover:scale-105"
@@ -296,10 +296,12 @@ export default function Reels() {
                 <Bookmark size={22} />
                 <span>Saved</span>
               </Link>
+              { /*
               <Link to="/profile" className="flex flex-col items-center text-sm">
                 <User size={22} />
                 <span>Profile</span>
               </Link>
+              */}
 
               <Link to="/user-profile" className="flex flex-col items-center text-sm">
                 <User size={22}/>
