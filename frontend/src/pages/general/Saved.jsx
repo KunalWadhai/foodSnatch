@@ -19,9 +19,9 @@ export default function Saved() {
       console.log(response.data);
       if (response.data && response.data.savedFoods) {
         const savedFoods = response.data.savedFoods.map((item) => ({
-          id: item.id,
+          id: item._id,
           food: {
-            id: item.food.id,
+            id: item.food._id,
             name: item.food.name,
             video: item.food.video,
             description: item.food.description,
@@ -96,7 +96,7 @@ export default function Saved() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {savedFoods.map((savedFood) => (
               <div
-                key={savedFood._id}
+                key={savedFood.id}
                 className="bg-white/10 rounded-xl overflow-hidden hover:bg-white/20 transition-colors"
               >
                 <div className="relative">
