@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import { Home, Bookmark, User } from "lucide-react";
+import { Home, Bookmark, BookmarkCheck, User } from "lucide-react";
 
 export default function Reels() {
   const videoRefs = useRef(new Map());
@@ -157,6 +157,11 @@ export default function Reels() {
       }
     } catch (error) {
       console.error("Error saving video:", error);
+      if (error.response?.status === 401) {
+        alert("Please log in to save this food item.");
+      } else {
+        alert("Failed to save. Please try again.");
+      }
     }
   };
 
@@ -256,10 +261,10 @@ export default function Reels() {
                 className={`w-12 h-12 rounded-full flex flex-col items-center justify-center transition-transform ${
                   saved[video.id]
                     ? "bg-yellow-400 text-black scale-110 shadow-lg hover:bg-yellow-500 hover:scale-125"
-                    : "bg-black/40 border border-white/30 text-white hover:scale-105"
+                    : "bg-black/40 border border-white/30 text-white hover:bg-white/20 hover:border-white/50 hover:scale-105"
                 }`}
               >
-                <Bookmark size={22} />
+                {saved[video.id] ? <BookmarkCheck size={22} /> : <Bookmark size={22} />}
                 <span className="text-xs">{video.savesCount || 0}</span>
               </button>
             </div>
