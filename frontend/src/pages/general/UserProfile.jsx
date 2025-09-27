@@ -19,7 +19,7 @@ export default function UserProfile() {
         setUser(res.data.user);
       } catch (err) {
         console.error("Error fetching user:", err);
-        navigate("/user-profile"); // if not logged in, redirect
+        navigate("/"); // if not logged in, redirect
       } finally {
         setLoading(false);
       }
@@ -55,9 +55,9 @@ export default function UserProfile() {
         {/* Avatar */}
         <div className="flex flex-col items-center">
           <div className="w-20 h-20 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-3xl font-bold shadow-lg">
-            {user?.name?.[0]?.toUpperCase() || <User size={32} />}
+            {user?.fullname?.[0]?.toUpperCase() || <User size={32} />}
           </div>
-          <h1 className="mt-4 text-2xl font-extrabold">{user?.name}</h1>
+          <h1 className="mt-4 text-2xl font-extrabold">{user?.fullname}</h1>
           <p className="text-gray-400 text-sm">{user?.email}</p>
         </div>
 

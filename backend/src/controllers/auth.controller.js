@@ -155,14 +155,17 @@ const logoutFoodPartner = async (req, res) => {
 }
 
 const getUserInfo = async (req, res) => {
-     let userid = req.user;
-     if(!user){
+     let userid = req.user._id;
+     if(!userid){
         return res.status(400).json({message: "User not exist"});
      }
      let user = await userModel.findById(userid);
+     if(!user){
+        return res.status(404).json({message: "User not found"});
+     }
      res.status(200).json({
         message: "User Info Fetched Successfully.",
-        userInfo: user
+        user: user
      });
 }
 
