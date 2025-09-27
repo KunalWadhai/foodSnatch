@@ -300,6 +300,11 @@ export default function Reels() {
                 <User size={22} />
                 <span>Profile</span>
               </Link>
+
+              <Link to="/user-profile" className="flex flex-col items-center text-sm">
+                <User size={22}/>
+                <span>UserProfile</span>
+              </Link>
             </div>
           </div>
         ))

@@ -11,6 +11,7 @@ import Saved from "../pages/general/Saved"
 import FoodPartnerProfile from "../pages/food-partner/FoodPartnerProfile";
 import About from "../pages/general/About";
 import Contact from "../pages/general/Contact"
+import UserProfile from "../pages/general/UserProfile";
 
 
 const AppRoutes = () => {
@@ -28,6 +29,7 @@ const AppRoutes = () => {
                 <Route path="/food-partner/:profile" element={<FoodPartnerProfile/>}></Route>
                 <Route path="/About" element={<About/>}></Route>
                 <Route path="/Contact" element={<Contact/>}></Route>
+                <Route path="/user-profile" element={<UserProfile/>}></Route>
             </Routes>
         </Router>
     )
