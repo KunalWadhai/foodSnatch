@@ -15,10 +15,11 @@ export default function UserProfile() {
           `${import.meta.env.VITE_BACKEND_URL}/api/auth/user/me`,
           { withCredentials: true }
         );
+        console.log(res.data);
         setUser(res.data.user);
       } catch (err) {
         console.error("Error fetching user:", err);
-        navigate("/"); // if not logged in, redirect
+        navigate("/user-profile"); // if not logged in, redirect
       } finally {
         setLoading(false);
       }
