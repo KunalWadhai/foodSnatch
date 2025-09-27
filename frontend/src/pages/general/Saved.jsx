@@ -21,7 +21,7 @@ export default function Saved() {
         const savedFoods = response.data.savedFoods.map((item) => ({
           id: item.id,
           food: {
-            id: item.food._id,
+            id: item.food.id,
             name: item.food.name,
             video: item.food.video,
             description: item.food.description,
