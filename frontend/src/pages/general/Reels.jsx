@@ -296,13 +296,6 @@ export default function Reels() {
                 <Bookmark size={22} />
                 <span>Saved</span>
               </Link>
-              { /*
-              <Link to="/profile" className="flex flex-col items-center text-sm">
-                <User size={22} />
-                <span>Profile</span>
-              </Link>
-              */}
-
               <Link to="/user-profile" className="flex flex-col items-center text-sm">
                 <User size={22}/>
                 <span>UserProfile</span>
