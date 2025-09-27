@@ -66,7 +66,7 @@ export default function FoodPartnerProfile() {
           {/* Back Button */}
           <div className="mt-8 flex justify-center">
             <button
-              onClick={() => navigate("/")}
+              onClick={() => navigate("/reels")}
               className="flex items-center gap-2 px-6 py-3 rounded-xl font-semibold bg-gradient-to-r from-purple-600 via-pink-600 to-red-500 shadow-lg hover:shadow-pink-500/30 hover:scale-105 transition text-white"
             >
               <ArrowLeft size={18} /> Back to Foods
