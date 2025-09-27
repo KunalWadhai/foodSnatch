@@ -1,4 +1,0 @@
-- [x] Update backend/src/controllers/auth.controller.js to add cookie options for cross-origin compatibility
-- [x] Restart the backend server
-- [x] Test food partner login and create food functionality
-- [x] Test user login and like/save video functionality

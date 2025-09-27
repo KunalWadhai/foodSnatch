@@ -36,7 +36,7 @@ export default function Reels() {
             itemName: item.name,
             likeCount: item.likeCount || 0,
             savesCount: item.savesCount || 0,
-            commentsCount: 0,
+           // commentsCount: 0,
           }));
           setVideos(fetchedVideos);
 
@@ -49,6 +49,22 @@ export default function Reels() {
           });
           setLikes(likesState);
           setSaved(savedState);
+
+          // Fetch saved foods to set initial saved state
+          try {
+            const savedResponse = await axios.get(
+              `${import.meta.env.VITE_BACKEND_URL}/api/food/save`,
+              { withCredentials: true }
+            );
+            const savedIds = savedResponse.data.savedFoods.map(s => s.food._id);
+            setSaved(prev => {
+              const newSaved = {...prev};
+              savedIds.forEach(id => newSaved[id] = true);
+              return newSaved;
+            });
+          } catch {
+            // User not logged in or error, ignore
+          }
         } else {
           setVideos([]);
         }
@@ -126,8 +142,18 @@ export default function Reels() {
 
       if (response.data.message === "Food Saved Successfully") {
         setSaved((prev) => ({ ...prev, [videoId]: true }));
+        setVideos((prev) =>
+          prev.map((v) =>
+            v.id === videoId ? { ...v, savesCount: v.savesCount + 1 } : v
+          )
+        );
       } else if (response.data.message === "Food unsaved successfully") {
         setSaved((prev) => ({ ...prev, [videoId]: false }));
+        setVideos((prev) =>
+          prev.map((v) =>
+            v.id === videoId ? { ...v, savesCount: v.savesCount - 1 } : v
+          )
+        );
       }
     } catch (error) {
       console.error("Error saving video:", error);
@@ -229,7 +255,7 @@ export default function Reels() {
                 onClick={() => toggleSave(video.id)}
                 className={`w-12 h-12 rounded-full flex flex-col items-center justify-center transition-transform ${
                   saved[video.id]
-                    ? "bg-yellow-400 text-black scale-110 shadow-lg"
+                    ? "bg-yellow-400 text-black scale-110 shadow-lg hover:bg-yellow-500 hover:scale-125"
                     : "bg-black/40 border border-white/30 text-white hover:scale-105"
                 }`}
               >
