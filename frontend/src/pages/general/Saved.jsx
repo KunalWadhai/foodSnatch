@@ -19,9 +19,7 @@ export default function Saved() {
       console.log(response.data);
       if (response.data && response.data.savedFoods) {
         const savedFoods = response.data.savedFoods
-          .filter(item => item.food) // Filter out items where food is null (deleted foods)
           .map((item) => ({
-            id: item._id,
             food: {
               id: item.food._id,
               name: item.food.name,
