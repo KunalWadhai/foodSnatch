@@ -154,6 +154,18 @@ const logoutFoodPartner = async (req, res) => {
     });
 }
 
+const getUserInfo = async (req, res) => {
+     let userid = req.user;
+     if(!user){
+        return res.status(400).json({message: "User not exist"});
+     }
+     let user = await userModel.findById(userid);
+     res.status(200).json({
+        message: "User Info Fetched Successfully.",
+        userInfo: user
+     });
+}
+
 // right now there is single function is to export but what if there are multiple
 // routes then don't preffered the below way instead just add module.exports before
 // function name or by the below method.
@@ -164,5 +176,6 @@ module.exports = {
     logoutUser,
     registerFoodPartner,
     loginFoodPartner,
-    logoutFoodPartner
+    logoutFoodPartner,
+    getUserInfo
 };

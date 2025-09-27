@@ -12,7 +12,7 @@ export default function UserProfile() {
     const fetchUser = async () => {
       try {
         const res = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/api/auth/me`,
+          `${import.meta.env.VITE_BACKEND_URL}/api/auth/user/me`,
           { withCredentials: true }
         );
         setUser(res.data.user);
