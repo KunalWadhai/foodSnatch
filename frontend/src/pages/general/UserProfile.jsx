@@ -29,7 +29,7 @@ export default function UserProfile() {
   const handleLogout = async () => {
     try {
       await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/api/auth/logout`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/auth/user/logout`,
         {},
         { withCredentials: true }
       );
