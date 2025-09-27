@@ -18,20 +18,22 @@ export default function Saved() {
       const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/food/save`, { withCredentials: true });
       console.log(response.data);
       if (response.data && response.data.savedFoods) {
-        const savedFoods = response.data.savedFoods.map((item) => ({
-          id: item._id,
-          food: {
-            id: item.food._id,
-            name: item.food.name,
-            video: item.food.video,
-            description: item.food.description,
-            likeCount: item.food.likeCount,
-            savesCount: item.food.savesCount,
-            commentsCount: item.food.commentsCount || 0,
-            foodpartner: item.food.foodpartner
-          },
-          createdAt: item.createdAt
-        }));
+        const savedFoods = response.data.savedFoods
+          .filter(item => item.food) // Filter out items where food is null (deleted foods)
+          .map((item) => ({
+            id: item._id,
+            food: {
+              id: item.food._id,
+              name: item.food.name,
+              video: item.food.video,
+              description: item.food.description,
+              likeCount: item.food.likeCount,
+              savesCount: item.food.savesCount,
+              commentsCount: item.food.commentsCount || 0,
+              foodpartner: item.food.foodpartner
+            },
+            createdAt: item.createdAt
+          }));
         setSavedFoods(savedFoods);
       } else {
         setSavedFoods([]);
