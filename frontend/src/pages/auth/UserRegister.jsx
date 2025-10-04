@@ -44,13 +44,13 @@ export default function UserRegister() {
           <p className="mt-6 text-lg text-gray-300 max-w-lg">
             Discover the ultimate way to <span className="text-purple-400">snatch your food</span> 
             in seconds. From street bites to gourmet delights, FoodSnatch brings 
-            your cravings to your doorstep faster than ever.
+            your cravings to let you reach food stores faster than ever.
           </p>
           <ul className="mt-6 space-y-3 text-gray-400 text-base">
-            <li>🍔 Order food in just a click</li>
-            <li>⚡ Superfast delivery at your location</li>
+            <li>🍔 watch food reels and reach out.</li>
+            <li>⚡ Short way to know your foody mind.</li>
             <li>🌙 Sleek, dark-mode experience</li>
-            <li>💳 Secure payments & exclusive rewards</li>
+            {/**<li>💳 </li> **/}
           </ul>
         </div>
 
