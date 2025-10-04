@@ -37,7 +37,6 @@ export default function UserProfile() {
     try {
       await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/auth/user/logout`,
-        {},
         { withCredentials: true }
       );
       navigate("/");
