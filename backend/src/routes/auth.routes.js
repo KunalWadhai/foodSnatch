@@ -8,6 +8,7 @@ router.post("/user/register", authController.registerUser);
 router.post("/user/login", authController.loginUser);
 router.get("/user/logout", authController.logoutUser);
 router.get("/user/me", authUserMiddleware, authController.getUserInfo);
+router.post("/user/update", authUserMiddleware, authController.updateUserInfo);
 
 
 // Food Partner Auth APIs

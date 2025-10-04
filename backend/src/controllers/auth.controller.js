@@ -2,7 +2,8 @@ const express = require("express");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const userModel = require("../models/user.model");
-const foodPartnerModel = require("../models/foodpartner.model")
+const foodPartnerModel = require("../models/foodpartner.model");
+const { trusted } = require("mongoose");
 
 const registerUser = async (req, res) => {
    try {
@@ -169,6 +170,23 @@ const getUserInfo = async (req, res) => {
      });
 }
 
+const updateUserInfo = async (req, res) => {
+    let userid = req.user;
+    let {new_fullname, new_email} = req.body;
+    let user = await userModel.findById(userid);
+    console.log(user);
+    
+    const updatedUser = await userModel.findOneAndUpdate({email: user.email}, 
+                                                         {fullname: new_fullname, email: new_email}, 
+                                                         {new: true});
+    if(updatedUser){
+        res.status(200).json({
+            message: "User Details Updated Successfully",
+            user: updatedUser
+        });
+    }
+}
+
 // right now there is single function is to export but what if there are multiple
 // routes then don't preffered the below way instead just add module.exports before
 // function name or by the below method.
@@ -180,5 +198,6 @@ module.exports = {
     registerFoodPartner,
     loginFoodPartner,
     logoutFoodPartner,
-    getUserInfo
+    getUserInfo, 
+    updateUserInfo
 };
