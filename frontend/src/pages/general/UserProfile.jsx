@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { LogOut, Edit3, User, XCircle} from "lucide-react";
+import { LogOut, Edit3, User, X} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export default function UserProfile() {
