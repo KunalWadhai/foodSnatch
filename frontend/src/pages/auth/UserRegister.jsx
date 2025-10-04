@@ -27,9 +27,7 @@ export default function UserRegister() {
 
       if(response.data?.success){
          setSuccessMsg("🎉 Signup successful! Welcome to FoodSnatch.");
-         setTimeout(() => {
-            navigate("/");
-         }, 2000);
+         navigate("/");
       }
     } catch (error) {
       // console.error("Registration error:", error);
