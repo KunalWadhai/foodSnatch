@@ -25,7 +25,7 @@ export default function UserRegister() {
         { withCredentials: true }
       );
 
-      if(response.data?.success){
+      if(response.data){
          setSuccessMsg("🎉 Signup successful! Welcome to FoodSnatch.");
          navigate("/");
       }
