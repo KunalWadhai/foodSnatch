@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { User, Mail, Lock, CheckCircle, XCircle } from "lucide-react";
+import { User, Mail, Lock } from "lucide-react";
 
 export default function UserRegister() {
   const navigate = useNavigate();
@@ -25,13 +25,15 @@ export default function UserRegister() {
         { withCredentials: true }
       );
 
-      if (response.data?.success) {
-        setSuccessMsg("🎉 Signup successful! Welcome to FoodSnatch.");
-        setTimeout(() => {
-          navigate("/");
-        }, 2000);
+      if(response.data?.success){
+         setSuccessMsg("🎉 Signup successful! Welcome to FoodSnatch.");
+         setTimeout(() => {
+            navigate("/");
+         }, 2000);
       }
     } catch (error) {
+      // console.error("Registration error:", error);
+      // alert("Registration failed. Please try again.");
       if (error.response?.status === 409) {
         // Example: backend returns 409 for duplicate user
         setErrorMsg("⚠️ User already exists with this email.");
@@ -56,15 +58,15 @@ export default function UserRegister() {
             Welcome to <span className="text-purple-300">FoodSnatch</span>
           </h1>
           <p className="mt-6 text-lg text-gray-300 max-w-lg">
-            Discover the ultimate way to{" "}
-            <span className="text-purple-400">snatch your food</span> in seconds.
-            From street bites to gourmet delights, FoodSnatch brings your cravings
-            to you faster than ever.
+            Discover the ultimate way to <span className="text-purple-400">snatch your food</span> 
+            in seconds. From street bites to gourmet delights, FoodSnatch brings 
+            your cravings to let you reach food stores faster than ever.
           </p>
           <ul className="mt-6 space-y-3 text-gray-400 text-base">
-            <li>🍔 Watch food reels & explore nearby dishes</li>
-            <li>⚡ Quickest way to satisfy your foodie cravings</li>
+            <li>🍔 watch food reels and reach out.</li>
+            <li>⚡ Short way to know your foody mind.</li>
             <li>🌙 Sleek, dark-mode experience</li>
+            {/**<li>💳 </li> **/}
           </ul>
         </div>
 
@@ -75,7 +77,7 @@ export default function UserRegister() {
               Create Your Account
             </h2>
 
-            {/* Error message */}
+              {/* Error message */}
             {errorMsg && (
               <div className="mb-4 flex items-center gap-2 text-red-400 bg-red-500/10 border border-red-500/30 px-4 py-3 rounded-lg animate-fade-in">
                 <XCircle className="w-5 h-5" />
@@ -90,7 +92,6 @@ export default function UserRegister() {
                 <p className="text-sm">{successMsg}</p>
               </div>
             )}
-
             <form className="space-y-5" onSubmit={handleSubmit}>
               {/* Full Name */}
               <div className="relative">
@@ -100,7 +101,6 @@ export default function UserRegister() {
                   type="text"
                   placeholder="Full Name"
                   className="w-full pl-10 pr-4 py-3 rounded-lg bg-white/5 border border-gray-600 text-white focus:ring-2 focus:ring-purple-500 outline-none"
-                  required
                 />
               </div>
 
@@ -112,7 +112,6 @@ export default function UserRegister() {
                   type="email"
                   placeholder="Email"
                   className="w-full pl-10 pr-4 py-3 rounded-lg bg-white/5 border border-gray-600 text-white focus:ring-2 focus:ring-purple-500 outline-none"
-                  required
                 />
               </div>
 
@@ -124,7 +123,6 @@ export default function UserRegister() {
                   type="password"
                   placeholder="Password"
                   className="w-full pl-10 pr-4 py-3 rounded-lg bg-white/5 border border-gray-600 text-white focus:ring-2 focus:ring-purple-500 outline-none"
-                  required
                 />
               </div>
 
