@@ -37,7 +37,18 @@ export default function UserLogin() {
 
       {/* Login Card */}
       <div className="w-full max-w-md p-8 rounded-2xl backdrop-blur-md bg-white/5 border border-white/20 shadow-[0_0_30px_rgba(168,85,247,0.4)] animate-fadeIn scale-100">
-        <h1 className="text-4xl font-extrabold text-center bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent mb-8 drop-shadow-lg">
+        {/* App Logo / Branding */}
+        <div className="flex flex-col items-center mb-8">
+          <div className="text-5xl font-extrabold bg-gradient-to-r from-orange-400 to-pink-500 bg-clip-text text-transparent drop-shadow-lg">
+            FoodSnatch 🍽️
+          </div>
+          <p className="text-gray-400 text-center mt-3 text-sm max-w-xs leading-relaxed">
+            Discover and share your favorite meals!  
+            From street bites to gourmet delights — join the community that loves food as much as you do.
+          </p>
+        </div>
+
+        <h1 className="text-3xl font-bold text-center bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent mb-6 drop-shadow-lg">
           Welcome Back 👋
         </h1>
 
@@ -59,15 +70,16 @@ export default function UserLogin() {
             type="submit"
             disabled={loading}
             className={`w-full py-3 rounded-lg font-semibold transition transform hover:scale-105 active:scale-95 
-              ${loading
-                ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white opacity-80 cursor-not-allowed"
-                : "bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:shadow-lg hover:shadow-purple-500/30"
+              ${
+                loading
+                  ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white opacity-80 cursor-not-allowed"
+                  : "bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:shadow-lg hover:shadow-purple-500/30"
               }`}
           >
             {loading ? (
               <span className="flex items-center justify-center gap-2">
                 <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                Logging...
+                Logging in...
               </span>
             ) : (
               "Login"
@@ -81,9 +93,17 @@ export default function UserLogin() {
             to="/user/register"
             className="text-purple-400 hover:text-purple-300 transition"
           >
-            Register
+            Register Now
           </Link>
         </p>
+
+        {/* Decorative Bottom Line */}
+        <div className="mt-8 border-t border-white/10 pt-4 text-center text-xs text-gray-500">
+          <span className="bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent font-semibold">
+            FoodSnatch
+          </span>{" "}
+          — Share, Discover & Relish Every Bite 🍕
+        </div>
       </div>
     </div>
   );

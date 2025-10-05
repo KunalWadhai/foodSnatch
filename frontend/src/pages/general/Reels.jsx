@@ -233,7 +233,7 @@ export default function Reels() {
               .map((heart) => (
                 <div
                   key={heart.id}
-                  className="absolute inset-0 flex items-center justify-center animate-bounce"
+                  className="absolute inset-0 flex items-center justify-center animate-bounce pointer-events-none"
                 >
                   <span className="text-6xl text-pink-500 drop-shadow-lg">
                     ❤️
@@ -242,7 +242,7 @@ export default function Reels() {
               ))}
 
             {/* Right side actions */}
-            <div className="absolute right-4 bottom-32 flex flex-col items-center gap-6 text-white">
+            <div className="absolute right-4 bottom-32 flex flex-col items-center gap-6 text-white z-50">
               {/* Like */}
               <button
                 onClick={() => likeVideo(video.id)}
