@@ -35,7 +35,7 @@ export default function UserProfile() {
 
   const handleLogout = async () => {
     try {
-      await axios.post(
+      await axios.get(
         `${import.meta.env.VITE_BACKEND_URL}/api/auth/user/logout`,
         { withCredentials: true }
       );
@@ -47,7 +47,7 @@ export default function UserProfile() {
 
   const handleEditSave = async () => {
     try {
-      await axios.put(
+      await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/auth/user/update`,
         editData,
         { withCredentials: true }
