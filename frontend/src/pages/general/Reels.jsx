@@ -157,6 +157,7 @@ export default function Reels() {
       }
     } catch (error) {
       console.error("Error saving video:", error);
+      console.error("Error response data:", error.response?.data);
       if (error.response?.status === 401) {
         alert("Please log in to save this food item.");
       } else {

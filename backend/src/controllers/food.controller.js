@@ -65,6 +65,7 @@ const likeFood = async (req, res) => {
 const saveFoodReel = async (req, res) => {
      const {foodId} = req.body;
      const user = req.user;
+     console.log("saveFoodReel called with user:", user._id, "foodId:", foodId);
 
      let isAlreadySaved = await savedFood.findOne({
         user: user._id,
