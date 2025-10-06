@@ -66,7 +66,7 @@ export default function Home() {
             </h2>
 
             <p className="text-lg text-white/70 max-w-xl">
-              Welcome to <span className="text-purple-300 font-semibold">FoodSnatch</span> — the home for curated food reels and honest local partners. Discover trending dishes, follow creators, and support nearby stores with beautiful imagery and one-tap checkout.
+              Welcome to <span className="text-purple-300 font-semibold">FoodSnatch</span> — the home for curated food reels, lightning-fast orders, and honest local partners. Discover trending dishes, follow creators, and support nearby stores with beautiful imagery and one-tap checkout.
             </p>
 
             {/* Role Switcher */}
@@ -132,17 +132,11 @@ export default function Home() {
               <div className="flex items-center gap-2">
                 <Star className="w-4 h-4" /> <span>Top-rated partners</span>
               </div>
-
-              {
-                  /**
-                   <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4" /> <span>Lightning deliveries</span>
-                  </div>
-                   */
-              }
-             
               <div className="flex items-center gap-2">
-                <Truck className="w-4 h-4" /> <span>Trusted Food Stores</span>
+                <Clock className="w-4 h-4" /> <span>Lightning deliveries</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Truck className="w-4 h-4" /> <span>Trusted couriers</span>
               </div>
               <div className="flex items-center gap-2">
                 <Heart className="w-4 h-4" /> <span>Loved by foodies</span>

@@ -5,6 +5,7 @@
     "tailwindcss": "^4.1.13"
   },
   "dependencies": {
-    "framer-motion": "^12.23.22"
+    "framer-motion": "^12.23.22",
+    "lucide-react": "^0.544.0"
   }
 }
