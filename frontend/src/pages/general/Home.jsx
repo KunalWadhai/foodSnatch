@@ -1,89 +1,232 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import { Heart, Truck, Clock, Star, Menu } from "lucide-react";
+
+// Production-ready, single-file Home component for FoodSnatch
+// - Uses Tailwind utility classes (glassmorphism + vibrant gradients)
+// - Subtle motion with Framer Motion
+// - Accessible role switcher and CTAs
+// - Keeps existing routing/api logic (Link targets unchanged)
+// - Export default component
 
 export default function Home() {
   const [role, setRole] = useState("user");
 
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-zinc-950 to-black text-white flex flex-col">
-      {/* NAV */}
-      <header className="flex justify-between items-center px-8 py-6 border-b border-white/10 backdrop-blur-sm">
-        <h1 className="text-2xl font-extrabold flex items-center gap-3">
-          <span className="rounded-full bg-gradient-to-r from-purple-500 to-pink-500 p-2 text-black">🍴</span>
-          <span className="bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
-            FoodSnatch
-          </span>
-        </h1>
+  // small animation presets for reuse
+  const fade = { hidden: { opacity: 0, y: 6 }, show: { opacity: 1, y: 0 } };
+  const pop = { hidden: { scale: 0.98, opacity: 0 }, show: { scale: 1, opacity: 1 } };
 
-        <nav className="hidden md:flex gap-6 text-gray-400">
-          <Link to="/" className="hover:text-white transition">Home</Link>
-          <Link to="/About" className="hover:text-white transition">About</Link>
-          <Link to="/Contact" className="hover:text-white transition">Contact</Link>
-        </nav>
+  return (
+    <div className="min-h-screen bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-black via-zinc-950 to-black text-white flex flex-col">
+      {/* NAV */}
+      <header className="sticky top-0 z-40 backdrop-blur-sm/20 bg-white/3 border-b border-white/6">
+        <div className="max-w-7xl mx-auto px-6 md:px-8 lg:px-12 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-r from-purple-400 to-pink-500 p-2 flex items-center justify-center shadow-2xl">
+              <span className="text-black text-xl">🍴</span>
+            </div>
+            <div>
+              <h1 className="text-xl md:text-2xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-purple-300 to-pink-400">
+                FoodSnatch
+              </h1>
+              <p className="text-xs text-white/50 -mt-1">Order • Share • Enjoy</p>
+            </div>
+          </div>
+
+          <nav className="hidden md:flex items-center gap-8 text-sm text-white/70">
+            <Link to="/" className="hover:text-white transition">Home</Link>
+            <Link to="/About" className="hover:text-white transition">About</Link>
+            <Link to="/Contact" className="hover:text-white transition">Contact</Link>
+            <Link to={role === "user" ? "/user/login" : "/food-partner/login"} className="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/8 transition">Sign in</Link>
+          </nav>
+
+          <div className="md:hidden">
+            <button aria-label="menu" className="p-2 rounded-lg bg-white/2">
+              <Menu />
+            </button>
+          </div>
+        </div>
       </header>
 
       {/* HERO SECTION */}
-      <main className="flex-grow flex flex-col items-center justify-center text-center px-6">
-        <div className="mb-4 px-4 py-1 rounded-full text-sm font-medium bg-gradient-to-r from-purple-600 to-pink-600 shadow-md">
-          🚀 Join 500+ Foodies & Partners
+      <main className="flex-grow">
+        <div className="max-w-7xl mx-auto px-6 md:px-8 lg:px-12 py-14 grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+          <motion.section initial="hidden" animate="show" variants={fade} className="space-y-6">
+            <div className="inline-flex items-center gap-3 rounded-full px-3 py-1.5 bg-gradient-to-r from-purple-600/30 to-pink-600/30 border border-white/6 shadow-md">
+              <span className="text-sm">🚀</span>
+              <span className="text-sm font-medium text-white/85">Join 500+ Foodies & Partners — Explore local flavor</span>
+            </div>
+
+            <h2 className="text-4xl md:text-6xl font-extrabold leading-tight">
+              Order. Share.{' '}
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-300 to-pink-400">
+                Enjoy.
+              </span>
+            </h2>
+
+            <p className="text-lg text-white/70 max-w-xl">
+              Welcome to <span className="text-purple-300 font-semibold">FoodSnatch</span> — the home for curated food reels, lightning-fast orders, and honest local partners. Discover trending dishes, follow creators, and support nearby stores with beautiful imagery and one-tap checkout.
+            </p>
+
+            {/* Role Switcher */}
+            <div className="mt-4 flex items-center gap-3">
+              <div className="rounded-2xl bg-white/3 p-1 flex items-center shadow-sm backdrop-blur-md border border-white/6">
+                <button
+                  onClick={() => setRole("user")}
+                  aria-pressed={role === "user"}
+                  className={`px-5 py-2 rounded-xl text-sm font-medium transition focus:outline-none focus:ring-2 focus:ring-purple-500 ${
+                    role === "user"
+                      ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-black shadow-xl scale-105'
+                      : 'text-white/70 hover:text-white'
+                  }`}
+                >
+                  For Users
+                </button>
+                <button
+                  onClick={() => setRole("partner")}
+                  aria-pressed={role === "partner"}
+                  className={`px-5 py-2 rounded-xl text-sm font-medium transition focus:outline-none focus:ring-2 focus:ring-indigo-400 ${
+                    role === "partner"
+                      ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-black shadow-xl scale-105'
+                      : 'text-white/70 hover:text-white'
+                  }`}
+                >
+                  For Partners
+                </button>
+              </div>
+
+              <motion.div initial="hidden" animate="show" variants={pop} className="ml-3">
+                <span className="text-xs text-white/60">Selected:</span>
+                <div className="text-sm font-semibold">{role === 'user' ? 'Foodie Mode' : 'Partner Dashboard'}</div>
+              </motion.div>
+            </div>
+
+            {/* CTA */}
+            <div className="mt-6 flex flex-wrap gap-4">
+              <Link
+                to={role === "user" ? "/user/register" : "/food-partner/register"}
+                className="inline-flex items-center gap-3 px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 text-black font-semibold shadow-2xl transform hover:scale-[1.03] active:scale-95 transition"
+              >
+                {role === "user" ? "Get Started — User" : "Get Started — Partner"}
+                <span aria-hidden>→</span>
+              </Link>
+
+              <Link
+                to={role === "user" ? "/user/login" : "/food-partner/login"}
+                className="inline-flex items-center gap-3 px-6 py-3 rounded-xl bg-white/5 text-white/90 font-medium hover:bg-white/8 transition"
+              >
+                {role === "user" ? "User Login" : "Partner Login"}
+              </Link>
+
+              <button
+                className="px-4 py-2 rounded-xl bg-white/3 text-sm text-white/80 hover:bg-white/6 transition"
+                onClick={() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })}
+              >
+                Explore features
+              </button>
+            </div>
+
+            {/* Trust badges */}
+            <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs text-white/60">
+              <div className="flex items-center gap-2">
+                <Star className="w-4 h-4" /> <span>Top-rated partners</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Clock className="w-4 h-4" /> <span>Lightning deliveries</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Truck className="w-4 h-4" /> <span>Trusted couriers</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Heart className="w-4 h-4" /> <span>Loved by foodies</span>
+              </div>
+            </div>
+          </motion.section>
+
+          {/* PREVIEW CARD: reels / hero image */}
+          <motion.aside initial="hidden" animate="show" variants={pop} className="relative">
+            <div className="rounded-3xl overflow-hidden shadow-2xl border border-white/6 backdrop-blur-md bg-gradient-to-br from-white/3 via-white/2 to-transparent">
+              {/* glassy top: small preview bar */}
+              <div className="px-4 py-3 flex items-center justify-between bg-white/3">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center text-black font-bold shadow">🍜</div>
+                  <div>
+                    <div className="text-sm font-semibold">Tandoori Flame</div>
+                    <div className="text-xs text-white/60">Trending • 2.1k views</div>
+                  </div>
+                </div>
+
+                <div className="text-xs text-white/50">By @flavorkeeper</div>
+              </div>
+
+              {/* main visual */}
+              <div className="aspect-[16/10] bg-[linear-gradient(45deg,#11182770,#0f172a70)] flex items-end p-6">
+                <div className="w-full">
+                  <div className="rounded-2xl p-4 bg-gradient-to-b from-white/4 to-white/2 border border-white/6 backdrop-blur-md">
+                    <h3 className="text-lg font-bold">Paneer Tikka Masala</h3>
+                    <p className="text-sm text-white/60 mt-1">Smoky, buttery, and irresistibly saucy — watch the reel for the chef's secret.</p>
+
+                    <div className="mt-4 flex items-center gap-3">
+                      <button className="px-4 py-2 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 text-black font-semibold">Watch Reel</button>
+                      <button className="px-3 py-2 rounded-lg bg-white/5">Save</button>
+                      <button className="px-3 py-2 rounded-lg bg-white/5">Share</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            {/* subtle floating badges */}
+            <div className="hidden md:block absolute -bottom-6 left-6">
+              <div className="rounded-full bg-gradient-to-r from-yellow-400 to-orange-400 px-4 py-2 text-black font-semibold shadow-lg">Featured</div>
+            </div>
+          </motion.aside>
         </div>
 
-        <h2 className="text-5xl md:text-6xl font-extrabold leading-tight">
-          Order. Share.{" "}
-          <span className="bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
-            Enjoy.
-          </span>
-        </h2>
-        <p className="mt-6 max-w-2xl text-gray-400 text-lg">
-          Welcome to <span className="text-purple-400 font-semibold">FoodSnatch</span> — 
-          where foodies connect with partners. Sign up or login to watch delicious food reels 
-          and discover local stores instantly.
-        </p>
+        {/* FEATURES / WHY US */}
+        <section className="max-w-7xl mx-auto px-6 md:px-8 lg:px-12 py-10">
+          <motion.div initial="hidden" animate="show" variants={fade} className="grid gap-6 md:grid-cols-3">
+            <FeatureCard title="Express Delivery" desc="Get food in 20 mins or less — we optimize routes for speed and quality." icon={<Truck />} />
+            <FeatureCard title="Curated Reels" desc="Short, snackable videos from creators & partners — discover trending dishes." icon={<Star />} />
+            <FeatureCard title="Partner-first" desc="Tools and dashboard for partners to run promos and manage orders." icon={<Heart />} />
+          </motion.div>
+        </section>
 
-        {/* Role Switcher */}
-        <div className="mt-10 inline-flex bg-white/5 p-1 rounded-2xl backdrop-blur-md border border-white/10 shadow-lg">
-          <button
-            onClick={() => setRole("user")}
-            className={`px-6 py-3 rounded-lg font-medium transition ${
-              role === "user"
-                ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-xl scale-105"
-                : "text-gray-300 hover:text-white"
-            }`}
-          >
-            For Users
-          </button>
-          <button
-            onClick={() => setRole("partner")}
-            className={`px-6 py-3 rounded-lg font-medium transition ${
-              role === "partner"
-                ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-xl scale-105"
-                : "text-gray-300 hover:text-white"
-            }`}
-          >
-            For Food Partners
-          </button>
-        </div>
-
-        {/* CTA Buttons */}
-        <div className="mt-8 flex gap-6 justify-center flex-wrap">
-          <Link
-            to={role === "user" ? "/user/register" : "/food-partner/register"}
-            className="px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 hover:shadow-xl hover:shadow-purple-500/30 transition text-white font-medium transform hover:scale-105 active:scale-95"
-          >
-            {role === "user" ? "User Signup" : "Partner Signup"}
-          </Link>
-          <Link
-            to={role === "user" ? "/user/login" : "/food-partner/login"}
-            className="px-6 py-3 rounded-xl bg-white/5 hover:bg-white/10 hover:shadow-lg transition text-gray-300 font-medium transform hover:scale-105 active:scale-95"
-          >
-            {role === "user" ? "User Login" : "Partner Login"}
-          </Link>
-        </div>
+        {/* SIMPLE FOOTER-like CTA */}
+        <section className="max-w-7xl mx-auto px-6 md:px-8 lg:px-12 py-10">
+          <div className="rounded-2xl p-6 bg-gradient-to-r from-purple-900/30 to-pink-900/20 border border-white/6 backdrop-blur-md flex flex-col md:flex-row items-center justify-between gap-4">
+            <div>
+              <h4 className="text-lg font-semibold">Ready to taste the difference?</h4>
+              <p className="text-sm text-white/70">Sign up and start exploring nearby favorites or register your store in minutes.</p>
+            </div>
+            <div className="flex gap-3">
+              <Link to={role === "user" ? "/user/register" : "/food-partner/register"} className="px-5 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 text-black font-semibold">Create account</Link>
+              <Link to={role === "user" ? "/user/login" : "/food-partner/login"} className="px-4 py-3 rounded-lg bg-white/5">Sign in</Link>
+            </div>
+          </div>
+        </section>
       </main>
 
-      <footer className="py-6 text-center text-gray-500 text-sm border-t border-white/10">
-        © {new Date().getFullYear()} FoodSnatch. Built with ❤️ for food lovers.
+      <footer className="py-6 text-center text-white/60 border-t border-white/6">
+        © {new Date().getFullYear()} FoodSnatch — Built with ❤️ for food lovers.
       </footer>
+    </div>
+  );
+}
+
+// Small presentational FeatureCard component kept in-file for single-file distribution
+function FeatureCard({ title, desc, icon }) {
+  return (
+    <div className="rounded-2xl p-5 bg-white/3 border border-white/6 backdrop-blur-md shadow-md">
+      <div className="flex items-center gap-3">
+        <div className="w-12 h-12 rounded-lg bg-gradient-to-r from-purple-500 to-pink-400 flex items-center justify-center text-black">{icon}</div>
+        <div>
+          <div className="font-semibold">{title}</div>
+          <div className="text-sm text-white/70 mt-1">{desc}</div>
+        </div>
+      </div>
     </div>
   );
 }
