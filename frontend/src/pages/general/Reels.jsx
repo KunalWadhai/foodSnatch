@@ -1,311 +1,208 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
-import { Home, Bookmark, BookmarkCheck, User } from "lucide-react";
+import { Heart, Truck, Clock, Star, Menu } from "lucide-react";
 
-export default function Reels() {
-  const videoRefs = useRef(new Map());
-  const containerRef = useRef(null);
+export default function Home() {
+  const [role, setRole] = useState("user");
 
-  const [videos, setVideos] = useState([]);
-  const [likes, setLikes] = useState({});
-  const [saved, setSaved] = useState({});
-  //const [comments, setComments] = useState({});
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [hearts, setHearts] = useState([]); // heart animation list
-
-  // Fetch videos
-  useEffect(() => {
-    const fetchVideos = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        const response = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/api/food`,
-          { withCredentials: true }
-        );
-
-        if (response.data.foodItem?.length > 0) {
-          const fetchedVideos = response.data.foodItem.map((item) => ({
-            id: item._id,
-            src: item.video,
-            description: item.description || "Delicious food item",
-            storeUrl: `/food-partner/${item.foodpartner || "unknown"}`,
-            itemName: item.name,
-            likeCount: item.likeCount || 0,
-            savesCount: item.savesCount || 0,
-           // commentsCount: 0,
-          }));
-          setVideos(fetchedVideos);
-
-          // init states
-          const likesState = {};
-          const savedState = {};
-          fetchedVideos.forEach((video) => {
-            likesState[video.id] = false;
-            savedState[video.id] = false;
-          });
-          setLikes(likesState);
-          setSaved(savedState);
-
-          // Fetch saved foods to set initial saved state
-          try {
-            const savedResponse = await axios.get(
-              `${import.meta.env.VITE_BACKEND_URL}/api/food/save`,
-              { withCredentials: true }
-            );
-            const savedIds = savedResponse.data.savedFoods.map(s => s.food._id);
-            setSaved(prev => {
-              const newSaved = {...prev};
-              savedIds.forEach(id => newSaved[id] = true);
-              return newSaved;
-            });
-          } catch {
-            // User not logged in or error, ignore
-          }
-        } else {
-          setVideos([]);
-        }
-      } catch (err) {
-        console.error("Error fetching videos:", err);
-        setError("Failed to load videos. Please try again later.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchVideos();
-  }, []);
-
-  // Intersection observer: autoplay/pause
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          const video = entry.target.querySelector("video");
-          if (!video) return;
-          if (entry.isIntersecting && entry.intersectionRatio >= 0.6) {
-            video.play().catch(() => {});
-          } else {
-            video.pause();
-          }
-        });
-      },
-      { threshold: [0.6] }
-    );
-
-    const nodes = containerRef.current?.querySelectorAll(".reel-item") || [];
-    nodes.forEach((n) => observer.observe(n));
-    return () => observer.disconnect();
-  }, [videos]);
-
-  // Like Video with animation
-  const likeVideo = async (videoId) => {
-    try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/api/food/like`,
-        { foodId: videoId },
-        { withCredentials: true }
-      );
-
-      if (response.data.message === "Like Added Successfully") {
-        setLikes((prev) => ({ ...prev, [videoId]: true }));
-        setVideos((prev) =>
-          prev.map((v) =>
-            v.id === videoId ? { ...v, likeCount: v.likeCount + 1 } : v
-          )
-        );
-        triggerHeart(videoId);
-      } else if (response.data.message === "Food Unliked Successfully") {
-        setLikes((prev) => ({ ...prev, [videoId]: false }));
-        setVideos((prev) =>
-          prev.map((v) =>
-            v.id === videoId ? { ...v, likeCount: v.likeCount - 1 } : v
-          )
-        );
-      }
-    } catch (error) {
-      console.error("Error liking video:", error);
-    }
-  };
-
-  // Save Video toggle
-  const toggleSave = async (videoId) => {
-    try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/api/food/save`,
-        { foodId: videoId },
-        { withCredentials: true }
-      );
-
-      if (response.data.message === "Food Saved Successfully") {
-        setSaved((prev) => ({ ...prev, [videoId]: true }));
-        setVideos((prev) =>
-          prev.map((v) =>
-            v.id === videoId ? { ...v, savesCount: v.savesCount + 1 } : v
-          )
-        );
-      } else if (response.data.message === "Food unsaved successfully") {
-        setSaved((prev) => ({ ...prev, [videoId]: false }));
-        setVideos((prev) =>
-          prev.map((v) =>
-            v.id === videoId ? { ...v, savesCount: v.savesCount - 1 } : v
-          )
-        );
-      }
-    } catch (error) {
-      console.error("Error saving video:", error);
-      console.error("Error response data:", error.response?.data);
-      if (error.response?.status === 401) {
-        alert("Please log in to save this food item.");
-      } else {
-        alert("Failed to save. Please try again.");
-      }
-    }
-  };
-
-  // Heart animation trigger
-  const triggerHeart = (videoId) => {
-    const newHeart = { id: Date.now(), videoId };
-    setHearts((prev) => [...prev, newHeart]);
-    setTimeout(() => {
-      setHearts((prev) => prev.filter((h) => h.id !== newHeart.id));
-    }, 1000);
-  };
-
-  if (loading) {
-    return (
-      <div className="h-screen w-full bg-black flex items-center justify-center">
-        <div className="text-white text-xl">Loading videos...</div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="h-screen w-full bg-black flex items-center justify-center">
-        <div className="text-white text-xl text-center">
-          <div className="mb-4">{error}</div>
-          <button
-            onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600"
-          >
-            Try Again
-          </button>
-        </div>
-      </div>
-    );
-  }
+  const fade = { hidden: { opacity: 0, y: 6 }, show: { opacity: 1, y: 0 } };
+  const pop = { hidden: { scale: 0.98, opacity: 0 }, show: { scale: 1, opacity: 1 } };
 
   return (
-  <div className="h-screen w-full bg-black flex items-center justify-center">
-    {/* Wrapper mimicking mobile frame */}
-    <div
-      ref={containerRef}
-      className="h-full w-full max-w-sm md:max-w-md lg:max-w-lg aspect-[9/16] bg-black overflow-y-scroll snap-y snap-mandatory scroll-smooth relative rounded-xl shadow-xl"
-    >
-      {videos.length === 0 ? (
-        <div className="h-full flex items-center justify-center text-white text-xl">
-          No videos available
-        </div>
-      ) : (
-        videos.map((video) => (
-          <div
-            key={video.id}
-            className="reel-item relative h-full w-full flex items-center justify-center snap-center"
-          >
-            {/* Video inside fixed aspect ratio */}
-            <video
-              ref={(el) => videoRefs.current.set(video.id, el)}
-              src={video.src}
-              className="w-full h-full object-cover rounded-xl"
-              playsInline
-              autoPlay
-              loop
-              preload="metadata"
-            />
-
-            {/* Floating hearts */}
-            {hearts
-              .filter((h) => h.videoId === video.id)
-              .map((heart) => (
-                <div
-                  key={heart.id}
-                  className="absolute inset-0 flex items-center justify-center animate-bounce pointer-events-none"
-                >
-                  <span className="text-6xl text-pink-500 drop-shadow-lg">
-                    ❤️
-                  </span>
-                </div>
-              ))}
-
-            {/* Right side actions */}
-            <div className="absolute right-4 bottom-32 flex flex-col items-center gap-6 text-white z-50">
-              {/* Like */}
-              <button
-                onClick={() => likeVideo(video.id)}
-                className={`w-12 h-12 rounded-full flex flex-col items-center justify-center transition-transform ${
-                  likes[video.id]
-                    ? "bg-pink-600 text-white scale-110 shadow-lg"
-                    : "bg-black/40 border border-white/30 text-white hover:scale-105"
-                }`}
-              >
-                ❤️
-                <span className="text-xs">{video.likeCount}</span>
-              </button>
-
-              {/* Save */}
-              <button
-                onClick={() => toggleSave(video.id)}
-                className={`w-12 h-12 rounded-full flex flex-col items-center hover:cursor-pointer justify-center transition-transform ${
-                  saved[video.id]
-                    ? "bg-yellow-400 text-black scale-110 shadow-lg hover:bg-yellow-500 hover:scale-125"
-                    : "bg-black/40 border border-white/30 text-white hover:bg-white/20 hover:border-white/50 hover:scale-105"
-                }`}
-              >
-                {saved[video.id] ? <BookmarkCheck size={22} /> : <Bookmark size={22} />}
-                <span className="text-xs">{video.savesCount || 0}</span>
-              </button>
+    <div className="min-h-screen bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-black via-zinc-950 to-black text-white flex flex-col">
+      {/* NAV */}
+      <header className="sticky top-0 z-40 backdrop-blur-sm/20 bg-white/3 border-b border-white/6">
+        <div className="max-w-7xl mx-auto px-6 md:px-8 lg:px-12 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-r from-purple-400 to-pink-500 p-2 flex items-center justify-center shadow-2xl">
+              <span className="text-black text-xl">🍴</span>
             </div>
-
-            {/* Bottom info */}
-            <div className="absolute bottom-20 left-4 right-4 text-white">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center font-bold">
-                  {video.itemName?.[0] || "F"}
-                </div>
-                <span className="font-semibold">{video.itemName}</span>
-              </div>
-              <p className="text-sm text-gray-200 mb-2">{video.description}</p>
-              <Link
-                to={video.storeUrl}
-                className="inline-block px-4 py-2 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 hover:shadow-xl transition font-semibold text-sm"
-              >
-                Visit Store
-              </Link>
-            </div>
-
-            {/* Bottom nav */}
-            <div className="absolute bottom-0 left-0 right-0 bg-black/30 backdrop-blur-md border-t border-white/10 px-6 py-3 flex justify-around items-center text-white rounded-b-xl">
-              <Link to="/" className="flex flex-col items-center text-sm">
-                <Home size={22} />
-                <span>Home</span>
-              </Link>
-              <Link to="/save" className="flex flex-col items-center text-sm">
-                <Bookmark size={22} />
-                <span>Saved</span>
-              </Link>
-              <Link to="/user-profile" className="flex flex-col items-center text-sm">
-                <User size={22} />
-                <span>Profile</span>
-              </Link>
+            <div>
+              <h1 className="text-xl md:text-2xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-purple-300 to-pink-400">
+                FoodSnatch
+              </h1>
+              <p className="text-xs text-white/50 -mt-1">Connect • Share • Inspire</p>
             </div>
           </div>
-        ))
-      )}
+
+          <nav className="hidden md:flex items-center gap-8 text-sm text-white/70">
+            <Link to="/" className="hover:text-white transition">Home</Link>
+            <Link to="/About" className="hover:text-white transition">About</Link>
+            <Link to="/Contact" className="hover:text-white transition">Contact</Link>
+            <Link to={role === "user" ? "/user/login" : "/food-partner/login"} className="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/8 transition">Sign in</Link>
+          </nav>
+
+          <div className="md:hidden">
+            <button aria-label="menu" className="p-2 rounded-lg bg-white/2">
+              <Menu />
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* HERO SECTION */}
+      <main className="flex-grow">
+        <div className="max-w-7xl mx-auto px-6 md:px-8 lg:px-12 py-14 grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+          <motion.section initial="hidden" animate="show" variants={fade} className="space-y-6">
+            <div className="inline-flex items-center gap-3 rounded-full px-3 py-1.5 bg-gradient-to-r from-purple-600/30 to-pink-600/30 border border-white/6 shadow-md">
+              <span className="text-sm">🚀</span>
+              <span className="text-sm font-medium text-white/85">Join 500+ Creators & Food Enthusiasts — Share your passion</span>
+            </div>
+
+            <h2 className="text-4xl md:text-6xl font-extrabold leading-tight">
+              Create. Share.{' '}
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-300 to-pink-400">
+                Inspire.
+              </span>
+            </h2>
+
+            <p className="text-lg text-white/70 max-w-xl">
+              Welcome to <span className="text-purple-300 font-semibold">FoodSnatch</span> — your social hub for food lovers and culinary creators. Watch trending reels, share your food moments, and connect with local food partners who make your city’s taste come alive.
+            </p>
+
+            {/* Role Switcher */}
+            <div className="mt-4 flex items-center gap-3">
+              <div className="rounded-2xl bg-white/3 p-1 flex items-center shadow-sm backdrop-blur-md border border-white/6">
+                <button
+                  onClick={() => setRole("user")}
+                  aria-pressed={role === "user"}
+                  className={`px-5 py-2 rounded-xl text-sm font-medium transition focus:outline-none focus:ring-2 focus:ring-purple-500 ${
+                    role === "user"
+                      ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-black shadow-xl scale-105'
+                      : 'text-white/70 hover:text-white'
+                  }`}
+                >
+                  For Users
+                </button>
+                <button
+                  onClick={() => setRole("partner")}
+                  aria-pressed={role === "partner"}
+                  className={`px-5 py-2 rounded-xl text-sm font-medium transition focus:outline-none focus:ring-2 focus:ring-indigo-400 ${
+                    role === "partner"
+                      ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-black shadow-xl scale-105'
+                      : 'text-white/70 hover:text-white'
+                  }`}
+                >
+                  For Partners
+                </button>
+              </div>
+
+              <motion.div initial="hidden" animate="show" variants={pop} className="ml-3">
+                <span className="text-xs text-white/60">Selected:</span>
+                <div className="text-sm font-semibold">{role === 'user' ? 'Foodie Mode' : 'Partner Dashboard'}</div>
+              </motion.div>
+            </div>
+
+            {/* CTA */}
+            <div className="mt-6 flex flex-wrap gap-4">
+              <Link
+                to={role === "user" ? "/user/register" : "/food-partner/register"}
+                className="inline-flex items-center gap-3 px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 text-black font-semibold shadow-2xl transform hover:scale-[1.03] active:scale-95 transition"
+              >
+                {role === "user" ? "Join as User" : "Join as Partner"}
+                <span aria-hidden>→</span>
+              </Link>
+
+              <Link
+                to={role === "user" ? "/user/login" : "/food-partner/login"}
+                className="inline-flex items-center gap-3 px-6 py-3 rounded-xl bg-white/5 text-white/90 font-medium hover:bg-white/8 transition"
+              >
+                {role === "user" ? "User Login" : "Partner Login"}
+              </Link>
+            </div>
+
+            {/* Trust badges */}
+            <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs text-white/60">
+              <div className="flex items-center gap-2">
+                <Star className="w-4 h-4" /> <span>Trending food reels</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Clock className="w-4 h-4" /> <span>Quick connections</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Truck className="w-4 h-4" /> <span>Local discovery</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Heart className="w-4 h-4" /> <span>Loved by creators</span>
+              </div>
+            </div>
+          </motion.section>
+
+          {/* PREVIEW CARD */}
+          <motion.aside initial="hidden" animate="show" variants={pop} className="relative">
+            <div className="rounded-3xl overflow-hidden shadow-2xl border border-white/6 backdrop-blur-md bg-gradient-to-br from-white/3 via-white/2 to-transparent">
+              <div className="px-4 py-3 flex items-center justify-between bg-white/3">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center text-black font-bold shadow">🎥</div>
+                  <div>
+                    <div className="text-sm font-semibold">Flavor Stories</div>
+                    <div className="text-xs text-white/60">Featured • 2.1k views</div>
+                  </div>
+                </div>
+                <div className="text-xs text-white/50">By @flavorkeeper</div>
+              </div>
+
+              <div className="aspect-[16/10] bg-[linear-gradient(45deg,#11182770,#0f172a70)] flex items-end p-6">
+                <div className="w-full">
+                  <div className="rounded-2xl p-4 bg-gradient-to-b from-white/4 to-white/2 border border-white/6 backdrop-blur-md">
+                    <h3 className="text-lg font-bold">Behind the Taste</h3>
+                    <p className="text-sm text-white/60 mt-1">Watch creators reveal how their signature dishes are made and share your own story.</p>
+
+                    <div className="mt-4 flex items-center gap-3">
+                      <button className="px-4 py-2 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 text-black font-semibold">Watch Now</button>
+                      <button className="px-3 py-2 rounded-lg bg-white/5">Save</button>
+                      <button className="px-3 py-2 rounded-lg bg-white/5">Share</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="hidden md:block absolute -bottom-6 left-6">
+              <div className="rounded-full bg-gradient-to-r from-yellow-400 to-orange-400 px-4 py-2 text-black font-semibold shadow-lg">Featured</div>
+            </div>
+          </motion.aside>
+        </div>
+
+        {/* FEATURES */}
+        <section className="max-w-7xl mx-auto px-6 md:px-8 lg:px-12 py-10">
+          <motion.div initial="hidden" animate="show" variants={fade} className="grid gap-6 md:grid-cols-3">
+            <FeatureCard title="Creator Reels" desc="Explore authentic short food videos and connect with passionate foodies." icon={<Star />} />
+            <FeatureCard title="Local Connections" desc="Discover chefs, cafés, and partners around you instantly." icon={<Truck />} />
+            <FeatureCard title="Interactive Community" desc="Like, comment, and collaborate on culinary creations and stories." icon={<Heart />} />
+          </motion.div>
+        </section>
+
+        <section className="max-w-7xl mx-auto px-6 md:px-8 lg:px-12 py-10">
+          <div className="rounded-2xl p-6 bg-gradient-to-r from-purple-900/30 to-pink-900/20 border border-white/6 backdrop-blur-md flex flex-col md:flex-row items-center justify-between gap-4">
+            <div>
+              <h4 className="text-lg font-semibold">Join the FoodSnatch movement</h4>
+              <p className="text-sm text-white/70">Sign up to share your favorite dishes, inspire others, or collaborate as a partner.</p>
+            </div>
+            <div className="flex gap-3">
+              <Link to={role === "user" ? "/user/register" : "/food-partner/register"} className="px-5 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 text-black font-semibold">Create account</Link>
+              <Link to={role === "user" ? "/user/login" : "/food-partner/login"} className="px-4 py-3 rounded-lg bg-white/5">Sign in</Link>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer className="py-6 text-center text-white/60 border-t border-white/6">
+        © {new Date().getFullYear()} FoodSnatch — Built with ❤️ for food lovers.
+      </footer>
     </div>
-  </div>
-);
+  );
+}
+
+function FeatureCard({ title, desc, icon }) {
+  return (
+    <div className="rounded-2xl p-5 bg-white/3 border border-white/6 backdrop-blur-md shadow-md">
+      <div className="flex items-center gap-3">
+        <div className="w-12 h-12 rounded-lg bg-gradient-to-r from-purple-500 to-pink-400 flex items-center justify-center text-black">{icon}</div>
+        <div>
+          <div className="font-semibold">{title}</div>
+          <div className="text-sm text-white/70 mt-1">{desc}</div>
+        </div>
+      </div>
+    </div>
+  );
 }

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+//import { motion } from "framer-motion";
 import { Heart, Truck, Clock, Star, Menu } from "lucide-react";
 
 // Production-ready, single-file Home component for FoodSnatch
@@ -30,7 +30,7 @@ export default function Home() {
               <h1 className="text-xl md:text-2xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-purple-300 to-pink-400">
                 FoodSnatch
               </h1>
-              <p className="text-xs text-white/50 -mt-1">Order • Share • Enjoy</p>
+              <p className="text-xs text-white/50 -mt-1">Connect • Share • Inspire</p>
             </div>
           </div>
 
@@ -66,7 +66,7 @@ export default function Home() {
             </h2>
 
             <p className="text-lg text-white/70 max-w-xl">
-              Welcome to <span className="text-purple-300 font-semibold">FoodSnatch</span> — the home for curated food reels, lightning-fast orders, and honest local partners. Discover trending dishes, follow creators, and support nearby stores with beautiful imagery and one-tap checkout.
+              Welcome to <span className="text-purple-300 font-semibold">FoodSnatch</span> — the home for curated food reels and honest local partners. Discover trending dishes, follow creators, and support nearby stores with beautiful imagery and one-tap checkout.
             </p>
 
             {/* Role Switcher */}
@@ -132,11 +132,17 @@ export default function Home() {
               <div className="flex items-center gap-2">
                 <Star className="w-4 h-4" /> <span>Top-rated partners</span>
               </div>
+
+              {
+                  /**
+                   <div className="flex items-center gap-2">
+                    <Clock className="w-4 h-4" /> <span>Lightning deliveries</span>
+                  </div>
+                   */
+              }
+             
               <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4" /> <span>Lightning deliveries</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Truck className="w-4 h-4" /> <span>Trusted couriers</span>
+                <Truck className="w-4 h-4" /> <span>Trusted Food Stores</span>
               </div>
               <div className="flex items-center gap-2">
                 <Heart className="w-4 h-4" /> <span>Loved by foodies</span>
