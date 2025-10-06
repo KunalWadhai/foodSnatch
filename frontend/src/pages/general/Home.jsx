@@ -160,8 +160,12 @@ export default function Home() {
                       >
                         Watch Now
                       </Link>
-                      <button className="px-3 py-2 rounded-lg bg-white/5">Save</button>
-                      <button className="px-3 py-2 rounded-lg bg-white/5">Share</button>
+                      {
+                        /*
+                             <button className="px-3 py-2 rounded-lg bg-white/5">Save</button>
+                             <button className="px-3 py-2 rounded-lg bg-white/5">Share</button>
+                        */
+                      }  
                     </div>
                   </div>
                 </div>
