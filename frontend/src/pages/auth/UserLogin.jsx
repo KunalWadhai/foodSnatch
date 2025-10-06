@@ -1,10 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 export default function UserLogin() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+
+  // If already logged in, redirect straight to reels
+  useEffect(() => {
+    const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+    if (isLoggedIn) navigate("/reels", { replace: true });
+  }, [navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -19,8 +25,12 @@ export default function UserLogin() {
         { email, password },
         { withCredentials: true }
       );
+
+      // If login success, set client-side flag and redirect
+      // (Backend session cookie/JWT is still used as before)
+      localStorage.setItem("isLoggedIn", "true");
       console.log(response.data);
-      navigate("/reels");
+      navigate("/reels", { replace: true });
     } catch (error) {
       console.error("Login error:", error);
       alert("Login Failed. Please try again.");
@@ -43,8 +53,7 @@ export default function UserLogin() {
             FoodSnatch 🍽️
           </div>
           <p className="text-gray-400 text-center mt-3 text-sm max-w-xs leading-relaxed">
-            Discover and share your favorite meals!  
-            From street bites to gourmet delights — join the community that loves food as much as you do.
+            Discover and share your favorite meals! From street bites to gourmet delights — join the community that loves food as much as you do.
           </p>
         </div>
 
@@ -55,15 +64,19 @@ export default function UserLogin() {
         <form className="space-y-5" onSubmit={handleSubmit}>
           <input
             id="email"
+            name="email"
             type="email"
             placeholder="Enter your email"
             className="w-full px-4 py-3 rounded-lg bg-black/40 border border-white/20 text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all"
+            required
           />
           <input
             id="password"
+            name="password"
             type="password"
             placeholder="Enter your password"
             className="w-full px-4 py-3 rounded-lg bg-black/40 border border-white/20 text-white placeholder-gray-400 focus:ring-2 focus:ring-pink-500 focus:border-pink-500 outline-none transition-all"
+            required
           />
 
           <button

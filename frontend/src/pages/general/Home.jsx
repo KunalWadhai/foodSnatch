@@ -9,6 +9,9 @@ export default function Home() {
   const fade = { hidden: { opacity: 0, y: 6 }, show: { opacity: 1, y: 0 } };
   const pop = { hidden: { scale: 0.98, opacity: 0 }, show: { scale: 1, opacity: 1 } };
 
+  // Utility to check login
+  const isLoggedIn = () => localStorage.getItem("isLoggedIn") === "true";
+
   return (
     <div className="min-h-screen bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-black via-zinc-950 to-black text-white flex flex-col">
       {/* NAV */}
@@ -150,7 +153,13 @@ export default function Home() {
                     <p className="text-sm text-white/60 mt-1">Watch creators reveal how their signature dishes are made and share your own story.</p>
 
                     <div className="mt-4 flex items-center gap-3">
-                      <button className="px-4 py-2 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 text-black font-semibold">Watch Now</button>
+                      {/* Conditional watch link: goes to /reels if logged in, otherwise to login */}
+                      <Link
+                        to={isLoggedIn() ? "/reels" : "/user/login"}
+                        className="px-4 py-2 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 text-black font-semibold"
+                      >
+                        Watch Now
+                      </Link>
                       <button className="px-3 py-2 rounded-lg bg-white/5">Save</button>
                       <button className="px-3 py-2 rounded-lg bg-white/5">Share</button>
                     </div>
