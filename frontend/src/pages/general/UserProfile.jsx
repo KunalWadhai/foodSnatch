@@ -41,6 +41,7 @@ export default function UserProfile() {
         `${import.meta.env.VITE_BACKEND_URL}/api/auth/user/logout`,
         { withCredentials: true }
       );
+      localStorage.removeItem("isLoggedIn");
       navigate("/");
     } catch (err) {
       console.error("Error logging out:", err);
