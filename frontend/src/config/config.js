@@ -1,6 +1,12 @@
 // API Configuration
+// export const API_CONFIG = {
+//   BASE_URL: import.meta.env.VITE_BACKEND_URL | import.meta.env.VITE_BACKEND_URL_LOCAL,
+// };
 export const API_CONFIG = {
-  BASE_URL: import.meta.env.VITE_BACKEND_URL,
+  BASE_URL:
+    import.meta.env.MODE === "development"
+      ? import.meta.env.VITE_BACKEND_URL_LOCAL
+      : import.meta.env.VITE_BACKEND_URL,
 };
 
 // Helper function to get full API URL
